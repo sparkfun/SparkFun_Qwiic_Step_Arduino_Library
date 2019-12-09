@@ -12,15 +12,10 @@
 bool QwiicStep::begin(uint8_t address, TwoWire &wirePort)
 {
     _deviceAddress = address; //grab the address that the motor is on
-    Serial.print("The device address is: 0x");
-    Serial.println(_deviceAddress, HEX);
-    _i2cPort = &wirePort; //grab the port that the user wants to use
-    readQuadRegister(ACCELERATION);
+    _i2cPort = &wirePort;     //grab the port that the user wants to use
 
-    readSingleRegister(38);
-    // // getAddress();
-    // //return true if the device is connected and the device ID is what we expect
-    return (checkDeviceID());
+    //return true if the device is connected and the device ID is what we expect
+    return (isConnected() & checkDeviceID());
 }
 
 bool QwiicStep::isConnected()
@@ -28,17 +23,9 @@ bool QwiicStep::isConnected()
     _i2cPort->beginTransmission(_deviceAddress);
     if (_i2cPort->endTransmission() == 0)
     {
-        Serial.println("Hello transmission successful!");
         return true;
     }
-    Serial.println("Hello transmission unsuccessful!");
     return false;
-}
-
-//FOR DEBUGGING
-uint8_t QwiicStep::getAddress()
-{
-    return readSingleRegister(I2C_ADDRESS);
 }
 
 uint8_t QwiicStep::deviceID()
@@ -53,9 +40,67 @@ bool QwiicStep::checkDeviceID()
 
 uint16_t QwiicStep::getFirmwareVersion()
 {
-    uint16_t version = (readSingleRegister(FIRMWARE_MSB)) << 8;
-    version |= readSingleRegister(FIRMWARE_LSB);
+    uint16_t version = readDoubleRegister(FIRMWARE);
     return version;
+}
+
+//DEBUG: have to test this in the future (once EEPROM is set up)
+bool QwiicStep::setI2Caddress(uint8_t address)
+{
+    //check that address is valid
+    if (address < 0x08 || address > 0x77)
+    {
+        return 1; //error immediately if the address is out of legal range
+    }
+
+    bool success = writeSingleRegister(I2C_ADDRESS, address);
+
+    if (success == true)
+    {
+        _deviceAddress = address;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+uint8_t QwiicStep::getI2Caddress()
+{
+    return _deviceAddress;
+}
+
+/*-------------------------- Motor Control ------------------------------*/
+
+bool QwiicStep::QSetMaxSpeed(float speed)
+{
+    bool success = writeQuadRegister(MAX_SPEED, speed);
+    return success;
+}
+
+bool QwiicStep::QSetSpeed(float speed)
+{
+    bool success = writeQuadRegister(SET_SPEED, speed);
+    return success;
+}
+
+bool QwiicStep::QSetAcceleration(float acceleration)
+{
+    bool success = writeQuadRegister(ACCELERATION, acceleration);
+    return success;
+}
+
+bool QwiicStep::QMoveTo(long absolute)
+{
+    bool success = writeQuadRegister(MOVE_TO, absolute);
+    return success;
+}
+
+bool QwiicStep::QSetStepMode(uint8_t mode)
+{
+    bool success = writeSingleRegister(DEVICE_CONFIG, mode);
+    return success;
 }
 
 /*---------------------- Internal I2C Abstraction -----------------------*/
@@ -70,10 +115,8 @@ uint8_t QwiicStep::readSingleRegister(Qwiic_Step_Register reg)
     //doesn't give us a warning about multiple candidates
     if (_i2cPort->requestFrom(_deviceAddress, static_cast<uint8_t>(1)) != 0)
     {
-        Serial.println("Hello, I'm about to read the register!");
         return _i2cPort->read();
     }
-    Serial.println("I don't think I read the register!");
     return 0;
 }
 
@@ -135,6 +178,18 @@ bool QwiicStep::writeDoubleRegister(Qwiic_Step_Register reg, uint16_t data)
     _i2cPort->write(reg);
     _i2cPort->write(lowByte(data));
     _i2cPort->write(highByte(data));
+    if (_i2cPort->endTransmission() == 0)
+        return true;
+    return false;
+}
+
+bool QwiicStep::writeQuadRegister(Qwiic_Step_Register reg, long data)
+{
+    _i2cPort->beginTransmission(_deviceAddress);
+    _i2cPort->write(reg);
+
+    _i2cPort->write((byte *)&data, 4);
+
     if (_i2cPort->endTransmission() == 0)
         return true;
     return false;

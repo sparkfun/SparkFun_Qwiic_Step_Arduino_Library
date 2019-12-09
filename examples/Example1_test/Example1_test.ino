@@ -12,6 +12,18 @@ void setup(){
     while(1);
   }
   Serial.println("Motor acknowledged.");
+
+  //Get firmware version
+  Serial.print("The firmware version is: 0x");
+  int version = motor.getFirmwareVersion();
+  Serial.println(version, HEX);
+
+  //test writeQuadRegister
+//  motor.QSetMaxSpeed(0xaaaaaaaa);
+//  motor.QSetMaxSpeed(0x78563412);
+//  motor.QMoveTo(0xaaaaaaaa);
+
+    motor.QMoveTo(400);
 }
 
 void loop(){

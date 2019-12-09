@@ -2,8 +2,7 @@
 enum Qwiic_Step_Register : uint8_t
 {
     ID = 0x00,
-    FIRMWARE_LSB = 0x01,
-    FIRMWARE_MSB = 0x02,
+    FIRMWARE = 0x01,
     INTERRUPT_ENABLE = 0x03,
     STATUS = 0x04,
     DEVICE_CONFIG = 0x05,
