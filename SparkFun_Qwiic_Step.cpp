@@ -30,7 +30,9 @@ bool QwiicStep::isConnected()
 
 uint8_t QwiicStep::deviceID()
 {
-    return readSingleRegister(ID); //read and return the value in the ID register
+    uint8_t id;
+    read(ID, (uint8_t *)&id, (uint8_t)sizeof(id)); //read and return the value in the ID register
+    return id;
 }
 
 bool QwiicStep::checkDeviceID()
@@ -40,7 +42,8 @@ bool QwiicStep::checkDeviceID()
 
 uint16_t QwiicStep::getFirmwareVersion()
 {
-    uint16_t version = readDoubleRegister(FIRMWARE);
+    uint16_t version;
+    read(FIRMWARE, (uint8_t *)&version, (uint8_t)sizeof(version));
     return version;
 }
 
@@ -53,7 +56,7 @@ bool QwiicStep::setI2Caddress(uint8_t address)
         return 1; //error immediately if the address is out of legal range
     }
 
-    bool success = writeSingleRegister(I2C_ADDRESS, address);
+    bool success = write(I2C_ADDRESS, (uint8_t *)&address, (uint8_t)sizeof(address));
 
     if (success == true)
     {
@@ -75,140 +78,106 @@ uint8_t QwiicStep::getI2Caddress()
 
 bool QwiicStep::QSetMaxSpeed(float speed)
 {
-    bool success = writeQuadRegister(MAX_SPEED, speed);
-    return success;
+    return (write(MAX_SPEED, (uint8_t *)&speed, (uint8_t)sizeof(speed)));
 }
 
 bool QwiicStep::QSetSpeed(float speed)
 {
-    bool success = writeQuadRegister(SET_SPEED, speed);
-    return success;
+    return (write(SET_SPEED, (uint8_t *)&speed, (uint8_t)sizeof(speed)));
 }
 
 bool QwiicStep::QSetAcceleration(float acceleration)
 {
-    bool success = writeQuadRegister(ACCELERATION, acceleration);
-    return success;
+    return (write(ACCELERATION, (uint8_t *)&acceleration, (uint8_t)sizeof(acceleration)));
 }
 
 bool QwiicStep::QMoveTo(long absolute)
 {
-    bool success = writeQuadRegister(MOVE_TO, absolute);
-    return success;
+    return (write(MOVE_TO, (uint8_t *)&absolute, (uint8_t)sizeof(absolute)));
 }
+
+//QMoveTo
 
 bool QwiicStep::QSetStepMode(uint8_t mode)
 {
-    bool success = writeSingleRegister(DEVICE_CONFIG, mode);
-    return success;
+    return (write(DEVICE_CONFIG, mode));
 }
 
+float QwiicStep::QGetMaxSpeed()
+{
+    float speed;
+    read(MAX_SPEED, (uint8_t *)&speed, (uint8_t)sizeof(speed));
+    return speed;
+}
+
+float QwiicStep::QGetSpeed()
+{
+    float speed;
+    read(SET_SPEED, (uint8_t *)&speed, (uint8_t)sizeof(speed));
+    return speed;
+}
+
+float QwiicStep::QGetAcceleration()
+{
+    float acceleration;
+    read(ACCELERATION, (uint8_t *)&acceleration, (uint8_t)sizeof(acceleration));
+    return acceleration;
+}
+
+uint8_t QwiicStep::QGetStepMode()
+{
+    uint8_t mode;
+    read(DEVICE_CONFIG, (uint8_t *)&mode, (uint8_t)sizeof(mode));
+    return mode;
+}
+
+/*------------------------- Motor Stepping ------------------------------*/
+
+void FullStepMode() {}
+
+void HalfStepMode() {}
+
+void QuarterStepMode() {}
+
+void EighthStepMode() {}
+
+void SixteenthStepMode() {}
 /*---------------------- Internal I2C Abstraction -----------------------*/
 
-uint8_t QwiicStep::readSingleRegister(Qwiic_Step_Register reg)
+bool QwiicStep::read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)
 {
     _i2cPort->beginTransmission(_deviceAddress);
     _i2cPort->write(reg);
     _i2cPort->endTransmission();
 
-    //typecasting the 1 parameter in requestFrom so that the compiler
-    //doesn't give us a warning about multiple candidates
-    if (_i2cPort->requestFrom(_deviceAddress, static_cast<uint8_t>(1)) != 0)
+    if (_i2cPort->requestFrom(_deviceAddress, buffSize) > 0)
     {
-        return _i2cPort->read();
-    }
-    return 0;
-}
-
-uint16_t QwiicStep::readDoubleRegister(Qwiic_Step_Register reg)
-{ //little endian
-    _i2cPort->beginTransmission(_deviceAddress);
-    _i2cPort->write(reg);
-    _i2cPort->endTransmission();
-
-    //typecasting the 2 parameter in requestFrom so that the compiler
-    //doesn't give us a warning about multiple candidates
-    if (_i2cPort->requestFrom(_deviceAddress, static_cast<uint8_t>(2)) != 0)
-    {
-        uint16_t data = _i2cPort->read();
-        data |= (_i2cPort->read() << 8);
-        return data;
-    }
-    return 0;
-}
-
-unsigned long QwiicStep::readQuadRegister(Qwiic_Step_Register reg)
-{
-    _i2cPort->beginTransmission(_deviceAddress);
-    _i2cPort->write(reg);
-    _i2cPort->endTransmission();
-
-    union databuffer {
-        uint8_t array[4];
-        unsigned long integer;
-    };
-
-    databuffer data;
-
-    //typecasting the 4 parameter in requestFrom so that the compiler
-    //doesn't give us a warning about multiple candidates
-    if (_i2cPort->requestFrom(_deviceAddress, static_cast<uint8_t>(4)) != 0)
-    {
-        for (uint8_t i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < buffSize; i++)
         {
-            data.array[i] = _i2cPort->read();
+            buff[i] = _i2cPort->read();
         }
+        return true;
     }
-    return data.integer;
-}
 
-bool QwiicStep::writeSingleRegister(Qwiic_Step_Register reg, uint8_t data)
-{
-    _i2cPort->beginTransmission(_deviceAddress);
-    _i2cPort->write(reg);
-    _i2cPort->write(data);
-    if (_i2cPort->endTransmission() == 0)
-        return true;
     return false;
 }
 
-bool QwiicStep::writeDoubleRegister(Qwiic_Step_Register reg, uint16_t data)
-{
-    _i2cPort->beginTransmission(_deviceAddress);
-    _i2cPort->write(reg);
-    _i2cPort->write(lowByte(data));
-    _i2cPort->write(highByte(data));
-    if (_i2cPort->endTransmission() == 0)
-        return true;
-    return false;
-}
-
-bool QwiicStep::writeQuadRegister(Qwiic_Step_Register reg, long data)
+bool QwiicStep::write(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)
 {
     _i2cPort->beginTransmission(_deviceAddress);
     _i2cPort->write(reg);
 
-    _i2cPort->write((byte *)&data, 4);
+    for (uint8_t i = 0; i < buffSize; i++)
+        _i2cPort->write(buff[i]);
 
     if (_i2cPort->endTransmission() == 0)
         return true;
     return false;
 }
 
-uint8_t QwiicStep::writeSingleRegisterWithReadback(Qwiic_Step_Register reg, uint8_t data)
+//Overloaded function declaration
+//Use when just writing one byte of data
+bool QwiicStep::write(Qwiic_Step_Register reg, uint8_t data)
 {
-    if (writeSingleRegister(reg, data))
-        return 1;
-    if (readSingleRegister(reg) != data)
-        return 2;
-    return 0;
-}
-
-uint16_t QwiicStep::writeDoubleRegisterWithReadback(Qwiic_Step_Register reg, uint16_t data)
-{
-    if (writeDoubleRegister(reg, data))
-        return 1;
-    if (readDoubleRegister(reg) != data)
-        return 2;
-    return 0;
+    return (write(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
 }
