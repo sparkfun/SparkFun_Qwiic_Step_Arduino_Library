@@ -30,6 +30,7 @@ public:
     bool QSetSpeed(float speed);               //stepper.setSpeed()
     bool QSetAcceleration(float acceleration); //stepper.setAcceleration()
     bool QMoveTo(long absolute);               //stepper.moveTo() -- should have a stepper.move()
+    bool QMove(long relative);
     bool QSetStepMode(uint8_t mode);
     float QGetMaxSpeed();
     float QGetSpeed();
@@ -38,14 +39,25 @@ public:
     uint8_t QGetStepMode();
 
     //Microstepping
-    void FullStepMode();
-    void HalfStepMode();
-    void QuarterStepMode();
-    void EighthStepMode();
-    void SixteenthStepMode();
+    bool FullStepMode();
+    bool HalfStepMode();
+    bool QuarterStepMode();
+    bool EighthStepMode();
+    bool SixteenthStepMode();
+
+    //Interrupt Enable
+    bool stopWhenLimSwitchPressedEnable();
+    bool stopWhenLimSwitchPressedDisable();
+    bool stopWhenPosReachedEnable();
+    bool stopWhenPosReachedDisable();
+    bool enablePositionReachedInterrupt();
+    bool disablePositionReachedInterrupt();
+    bool enableLimSwitchPressedInterrupt();
+    bool disableLimSwitchPressedInterrupt();
 
     //Internal I2C Abstraction
     bool read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize);
+    bool read(Qwiic_Step_Register reg, uint8_t data);
     bool write(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize);
     bool write(Qwiic_Step_Register reg, uint8_t data);
 };

@@ -96,7 +96,10 @@ bool QwiicStep::QMoveTo(long absolute)
     return (write(MOVE_TO, (uint8_t *)&absolute, (uint8_t)sizeof(absolute)));
 }
 
-//QMoveTo
+bool QwiicStep::QMove(long relative)
+{
+    return (write(MOVE, (uint8_t *)&relative, (uint8_t)sizeof(relative)));
+}
 
 bool QwiicStep::QSetStepMode(uint8_t mode)
 {
@@ -133,15 +136,122 @@ uint8_t QwiicStep::QGetStepMode()
 
 /*------------------------- Motor Stepping ------------------------------*/
 
-void FullStepMode() {}
+bool QwiicStep::FullStepMode()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
+    deviceConfigure.MS1 = 0;
+    deviceConfigure.MS2 = 0;
+    deviceConfigure.MS3 = 0;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
 
-void HalfStepMode() {}
+bool QwiicStep::HalfStepMode()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
+    deviceConfigure.MS1 = 1;
+    deviceConfigure.MS2 = 0;
+    deviceConfigure.MS3 = 0;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
 
-void QuarterStepMode() {}
+bool QwiicStep::QuarterStepMode()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
+    deviceConfigure.MS1 = 0;
+    deviceConfigure.MS2 = 1;
+    deviceConfigure.MS3 = 0;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
 
-void EighthStepMode() {}
+bool QwiicStep::EighthStepMode()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
+    deviceConfigure.MS1 = 1;
+    deviceConfigure.MS2 = 1;
+    deviceConfigure.MS3 = 0;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
 
-void SixteenthStepMode() {}
+bool QwiicStep::SixteenthStepMode()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
+    deviceConfigure.MS1 = 1;
+    deviceConfigure.MS2 = 1;
+    deviceConfigure.MS3 = 1;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
+
+/*---------------------- Interrupt Configuration ------------------------*/
+
+bool QwiicStep::stopWhenLimSwitchPressedEnable()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
+    deviceConfigure.stopOnLimitSwitchPress = 1;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
+
+bool QwiicStep::stopWhenLimSwitchPressedDisable()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
+    deviceConfigure.stopOnLimitSwitchPress = 0;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
+
+bool QwiicStep::stopWhenPosReachedEnable()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
+    deviceConfigure.stopOnPositionReached = 1;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
+
+bool QwiicStep::stopWhenPosReachedDisable()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
+    deviceConfigure.stopOnPositionReached = 0;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
+
+bool QwiicStep::enablePositionReachedInterrupt()
+{
+    interruptEnableBitField intEnable;
+    read(INTERRUPT_ENABLE, intEnable.byteWrapped);
+    intEnable.requestedPosReached = 1;
+    return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
+}
+
+bool QwiicStep::disablePositionReachedInterrupt()
+{
+    interruptEnableBitField intEnable;
+    read(INTERRUPT_ENABLE, intEnable.byteWrapped);
+    intEnable.requestedPosReached = 0;
+    return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
+}
+
+bool QwiicStep::enableLimSwitchPressedInterrupt()
+{
+    interruptEnableBitField intEnable;
+    read(INTERRUPT_ENABLE, intEnable.byteWrapped);
+    intEnable.limSwitchPressed = 1;
+    return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
+}
+
+bool QwiicStep::disableLimSwitchPressedInterrupt()
+{
+    interruptEnableBitField intEnable;
+    read(INTERRUPT_ENABLE, intEnable.byteWrapped);
+    intEnable.limSwitchPressed = 0;
+    return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
+}
+
 /*---------------------- Internal I2C Abstraction -----------------------*/
 
 bool QwiicStep::read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)
@@ -160,6 +270,13 @@ bool QwiicStep::read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)
     }
 
     return false;
+}
+
+//Overloaded function declaration
+//Use when just writing one byte of data
+bool QwiicStep::read(Qwiic_Step_Register reg, uint8_t data)
+{
+    return (read(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
 }
 
 bool QwiicStep::write(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)

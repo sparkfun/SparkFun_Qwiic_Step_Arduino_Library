@@ -23,12 +23,14 @@ void setup() {
   motor.QSetAcceleration(950);
   motor.QMoveTo(400);
 
+//  motor.SixteenthStepMode();
+  
   Serial.print("Max speed: ");
   Serial.println(motor.QGetMaxSpeed());
   Serial.print("Set speed: ");
   Serial.println(motor.QGetSpeed());
   Serial.print("Acceleration: ");
-  Serial.print(motor.QGetAcceleration());
+  Serial.println(motor.QGetAcceleration());
 }
 
 void loop() {
