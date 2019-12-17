@@ -208,7 +208,7 @@ bool QwiicStep::stopWhenPosReachedEnable()
 {
     deviceConfigBitField deviceConfigure;
     read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
-    deviceConfigure.stopOnPositionReached = 1;
+    deviceConfigure.powerDownPositionReached = 1;
     return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
@@ -216,7 +216,7 @@ bool QwiicStep::stopWhenPosReachedDisable()
 {
     deviceConfigBitField deviceConfigure;
     read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
-    deviceConfigure.stopOnPositionReached = 0;
+    deviceConfigure.powerDownPositionReached = 0;
     return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
@@ -224,7 +224,7 @@ bool QwiicStep::enablePositionReachedInterrupt()
 {
     interruptEnableBitField intEnable;
     read(INTERRUPT_ENABLE, intEnable.byteWrapped);
-    intEnable.requestedPosReached = 1;
+    intEnable.requestedPosReachedEnable = 1;
     return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
 }
 
@@ -232,7 +232,7 @@ bool QwiicStep::disablePositionReachedInterrupt()
 {
     interruptEnableBitField intEnable;
     read(INTERRUPT_ENABLE, intEnable.byteWrapped);
-    intEnable.requestedPosReached = 0;
+    intEnable.requestedPosReachedEnable = 0;
     return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
 }
 
@@ -240,7 +240,7 @@ bool QwiicStep::enableLimSwitchPressedInterrupt()
 {
     interruptEnableBitField intEnable;
     read(INTERRUPT_ENABLE, intEnable.byteWrapped);
-    intEnable.limSwitchPressed = 1;
+    intEnable.limSwitchPressedEnable = 1;
     return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
 }
 
@@ -248,9 +248,11 @@ bool QwiicStep::disableLimSwitchPressedInterrupt()
 {
     interruptEnableBitField intEnable;
     read(INTERRUPT_ENABLE, intEnable.byteWrapped);
-    intEnable.limSwitchPressed = 0;
+    intEnable.limSwitchPressedEnable = 0;
     return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
 }
+
+//DEBUGGING: clear estopped bit
 
 /*---------------------- Internal I2C Abstraction -----------------------*/
 

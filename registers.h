@@ -23,8 +23,8 @@ enum Qwiic_Step_Register : uint8_t
 typedef union {
     struct
     {
-        bool requestedPosReached : 1;
-        bool limSwitchPressed : 1;
+        bool requestedPosReachedEnable : 1;
+        bool limSwitchPressedEnable : 1;
         bool : 6;
     };
     uint8_t byteWrapped;
@@ -36,9 +36,10 @@ typedef union {
         bool isRunning : 1;      //This is bit 0. Gets set to 1 when motor is turning, 0 if not.
         bool isAccelerating : 1; //Gets set to 1 when motor is accelerating, 0 otherwise.
         bool isDecelerating : 1; //Gets set to 1 when motor is decelerating, 0 otherwise.
-        bool isLimited : 1;
         bool isReached : 1;
-        bool : 3;
+        bool isLimited : 1;
+        bool eStopped : 1;
+        bool : 2;
     };
     uint8_t byteWrapped;
 } statusRegisterBitField;
@@ -49,8 +50,8 @@ typedef union {
         bool MS1 : 1; //This starts at bit 0. Bits indicate micro step mode (MS3 MS2 MS1).
         bool MS2 : 1;
         bool MS3 : 1;
-        bool stopOnPositionReached : 1;  //User-mutable. If 1, stepper is disabled once requested position is reached.
-        bool stopOnLimitSwitchPress : 1; //User-mutable. If 1, motor will stop when limit switch is pressed.
+        bool powerDownPositionReached : 1; //User-mutable. If 1, stepper is disabled once requested position is reached.
+        bool stopOnLimitSwitchPress : 1;   //User-mutable. If 1, motor will stop when limit switch is pressed.
         bool : 3;
     };
     uint8_t byteWrapped;
