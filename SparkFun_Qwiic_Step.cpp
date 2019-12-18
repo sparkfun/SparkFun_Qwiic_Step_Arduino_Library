@@ -83,7 +83,7 @@ bool QwiicStep::QSetMaxSpeed(float speed)
 
 bool QwiicStep::QSetSpeed(float speed)
 {
-    return (write(SET_SPEED, (uint8_t *)&speed, (uint8_t)sizeof(speed)));
+    return (write(SPEED, (uint8_t *)&speed, (uint8_t)sizeof(speed)));
 }
 
 bool QwiicStep::QSetAcceleration(float acceleration)
@@ -116,7 +116,7 @@ float QwiicStep::QGetMaxSpeed()
 float QwiicStep::QGetSpeed()
 {
     float speed;
-    read(SET_SPEED, (uint8_t *)&speed, (uint8_t)sizeof(speed));
+    read(SPEED, (uint8_t *)&speed, (uint8_t)sizeof(speed));
     return speed;
 }
 

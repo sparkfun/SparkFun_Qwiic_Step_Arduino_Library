@@ -10,14 +10,15 @@ enum Qwiic_Step_Register : uint8_t
     CURRENT_POSITION = 0x07,
     DIST_TO_GO = 0x0B,
     MOVE = 0x0F,
-    MOVE_TO = 0x13,
-    MAX_SPEED = 0x17,
-    ACCELERATION = 0x1B,
-    SET_SPEED = 0x1F,
-    ENABLE_SET_SPEED = 0x23,
-    HOLD_CURRENT = 0x24,
-    RUN_CURRENT = 0x26,
-    I2C_ADDRESS = 0x28,
+    ENABLE_MOVE_NVM = 0x13,
+    MOVE_TO = 0x14,
+    MAX_SPEED = 0x18,
+    ACCELERATION = 0x1C,
+    SPEED = 0x20,
+    ENABLE_SPEED_NVM = 0x24,
+    HOLD_CURRENT = 0x25,
+    RUN_CURRENT = 0x27,
+    I2C_ADDRESS = 0x29,
 };
 
 typedef union {
