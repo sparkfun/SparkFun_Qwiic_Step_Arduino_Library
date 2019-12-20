@@ -139,7 +139,6 @@ uint8_t QwiicStep::QGetStepMode()
 bool QwiicStep::FullStepMode()
 {
     deviceConfigBitField deviceConfigure;
-    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
     deviceConfigure.MS1 = 0;
     deviceConfigure.MS2 = 0;
     deviceConfigure.MS3 = 0;
@@ -149,7 +148,6 @@ bool QwiicStep::FullStepMode()
 bool QwiicStep::HalfStepMode()
 {
     deviceConfigBitField deviceConfigure;
-    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
     deviceConfigure.MS1 = 1;
     deviceConfigure.MS2 = 0;
     deviceConfigure.MS3 = 0;
@@ -159,7 +157,6 @@ bool QwiicStep::HalfStepMode()
 bool QwiicStep::QuarterStepMode()
 {
     deviceConfigBitField deviceConfigure;
-    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
     deviceConfigure.MS1 = 0;
     deviceConfigure.MS2 = 1;
     deviceConfigure.MS3 = 0;
@@ -169,7 +166,6 @@ bool QwiicStep::QuarterStepMode()
 bool QwiicStep::EighthStepMode()
 {
     deviceConfigBitField deviceConfigure;
-    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
     deviceConfigure.MS1 = 1;
     deviceConfigure.MS2 = 1;
     deviceConfigure.MS3 = 0;
@@ -179,7 +175,6 @@ bool QwiicStep::EighthStepMode()
 bool QwiicStep::SixteenthStepMode()
 {
     deviceConfigBitField deviceConfigure;
-    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
     deviceConfigure.MS1 = 1;
     deviceConfigure.MS2 = 1;
     deviceConfigure.MS3 = 1;
@@ -204,7 +199,7 @@ bool QwiicStep::stopWhenLimSwitchPressedDisable()
     return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
-bool QwiicStep::stopWhenPosReachedEnable()
+bool QwiicStep::powerDownPosReachedEnable()
 {
     deviceConfigBitField deviceConfigure;
     read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
@@ -212,7 +207,7 @@ bool QwiicStep::stopWhenPosReachedEnable()
     return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
-bool QwiicStep::stopWhenPosReachedDisable()
+bool QwiicStep::powerDownPosReachedDisable()
 {
     deviceConfigBitField deviceConfigure;
     read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
@@ -220,6 +215,7 @@ bool QwiicStep::stopWhenPosReachedDisable()
     return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
+//these are not really working yetttttt
 bool QwiicStep::enablePositionReachedInterrupt()
 {
     interruptEnableBitField intEnable;
@@ -252,7 +248,13 @@ bool QwiicStep::disableLimSwitchPressedInterrupt()
     return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
 }
 
-//DEBUGGING: clear estopped bit
+//User needs to manually clear eStop bit when an emergency stop has occurred
+bool QwiicStep::clearEStop()
+{
+    statusRegisterBitField status;
+    status.eStopped = 0;
+    return (write(STATUS, status.byteWrapped));
+}
 
 /*---------------------- Internal I2C Abstraction -----------------------*/
 

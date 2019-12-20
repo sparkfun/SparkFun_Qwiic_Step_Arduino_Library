@@ -13,24 +13,35 @@ void setup() {
   }
   Serial.println("Motor acknowledged.");
 
-  //Get firmware version
-  Serial.print("The firmware version is: 0x");
-  int version = motor.getFirmwareVersion();
-  Serial.println(version, HEX);
+//  //Get firmware version
+//  Serial.print("The firmware version is: 0x");
+//  int version = motor.getFirmwareVersion();
+//  Serial.println(version, HEX);
+//
+//  motor.QSetMaxSpeed(800);
+//  motor.QSetSpeed(300);
+//  motor.QSetAcceleration(950);
+//  motor.QMoveTo(400);
+//
+//  motor.HalfStepMode();
+//  
+//  Serial.print("Max speed: ");
+//  Serial.println(motor.QGetMaxSpeed());
+//  Serial.print("Set speed: ");
+//  Serial.println(motor.QGetSpeed());
+//  Serial.print("Acceleration: ");
+//  Serial.println(motor.QGetAcceleration());
 
-  motor.QSetMaxSpeed(800);
-  motor.QSetSpeed(300);
-  motor.QSetAcceleration(950);
-  motor.QMoveTo(400);
+//  motor.stopWhenLimSwitchPressedEnable();
+//  motor.powerDownPosReachedEnable();
 
-//  motor.SixteenthStepMode();
+  motor.enablePositionReachedInterrupt();
+  motor.enableLimSwitchPressedInterrupt();
   
-  Serial.print("Max speed: ");
-  Serial.println(motor.QGetMaxSpeed());
-  Serial.print("Set speed: ");
-  Serial.println(motor.QGetSpeed());
-  Serial.print("Acceleration: ");
-  Serial.println(motor.QGetAcceleration());
+//  motor.stopWhenLimSwitchPressedDisable();
+//  motor.powerDownPosReachedDisable();
+//  motor.disablePositionReachedInterrupt();
+//  motor.disableLimSwitchPressedInterrupt();
 }
 
 void loop() {

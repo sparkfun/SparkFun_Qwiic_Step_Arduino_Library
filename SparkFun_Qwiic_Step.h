@@ -48,12 +48,13 @@ public:
     //Interrupt Enable
     bool stopWhenLimSwitchPressedEnable();
     bool stopWhenLimSwitchPressedDisable();
-    bool stopWhenPosReachedEnable();
-    bool stopWhenPosReachedDisable();
+    bool powerDownPosReachedEnable();
+    bool powerDownPosReachedDisable();
     bool enablePositionReachedInterrupt();
     bool disablePositionReachedInterrupt();
     bool enableLimSwitchPressedInterrupt();
     bool disableLimSwitchPressedInterrupt();
+    bool clearEStop();
 
     //Internal I2C Abstraction
     bool read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize);
