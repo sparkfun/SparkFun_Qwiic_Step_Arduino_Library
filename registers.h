@@ -3,7 +3,7 @@ enum Qwiic_Step_Register : uint8_t
 {
     ID = 0x00,
     FIRMWARE = 0x01,
-    INTERRUPT_ENABLE = 0x03,
+    INTERRUPT_CONFIG = 0x03,
     STATUS = 0x04,
     DEVICE_CONFIG = 0x05,
     DEVICE_CONTROL = 0x06,
@@ -25,11 +25,13 @@ typedef union {
     struct
     {
         bool requestedPosReachedEnable : 1;
+        bool requestedPosReachedIntTriggered : 1;
         bool limSwitchPressedEnable : 1;
-        bool : 6;
+        bool limSwitchPressedIntTriggered : 1;
+        bool : 4;
     };
     uint8_t byteWrapped;
-} interruptEnableBitField;
+} interruptConfigBitField;
 
 typedef union {
     struct
@@ -51,8 +53,8 @@ typedef union {
         bool MS1 : 1; //This starts at bit 0. Bits indicate micro step mode (MS3 MS2 MS1).
         bool MS2 : 1;
         bool MS3 : 1;
-        bool powerDownPositionReached : 1; //User-mutable. If 1, stepper is disabled once requested position is reached.
-        bool stopOnLimitSwitchPress : 1;   //User-mutable. If 1, motor will stop when limit switch is pressed.
+        bool disableMotorPositionReached : 1; //User-mutable. If 1, stepper is disabled once requested position is reached.
+        bool stopOnLimitSwitchPress : 1;      //User-mutable. If 1, motor will stop when limit switch is pressed.
         bool : 3;
     };
     uint8_t byteWrapped;
@@ -61,11 +63,12 @@ typedef union {
 typedef union {
     struct
     {
-        bool stop : 1; //Not really sure about these yettttt
-        bool runTo : 1;
-        bool runContinuous : 1;
-        bool sleep : 1;
-        bool : 4;
+        bool run : 1;
+        bool runSpeed : 1;
+        bool runSpeedToPosition : 1;
+        bool stop : 1;
+        bool disableMotor : 1;
+        bool : 3;
     };
     uint8_t byteWrapped;
 } deviceControlBitField;

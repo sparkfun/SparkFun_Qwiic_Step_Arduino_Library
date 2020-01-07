@@ -39,21 +39,22 @@ public:
     uint8_t QGetStepMode();
 
     //Microstepping
-    bool FullStepMode();
-    bool HalfStepMode();
-    bool QuarterStepMode();
-    bool EighthStepMode();
-    bool SixteenthStepMode();
+    bool fullStepMode();
+    bool halfStepMode();
+    bool quarterStepMode();
+    bool eighthStepMode();
+    bool sixteenthStepMode();
 
     //Interrupt Enable
-    bool stopWhenLimSwitchPressedEnable();
-    bool stopWhenLimSwitchPressedDisable();
-    bool powerDownPosReachedEnable();
-    bool powerDownPosReachedDisable();
     bool enablePositionReachedInterrupt();
     bool disablePositionReachedInterrupt();
+    bool clearIsReachedInterrupt();
     bool enableLimSwitchPressedInterrupt();
     bool disableLimSwitchPressedInterrupt();
+    bool enableStopWhenLimSwitchPressed();
+    bool disableStopWhenLimSwitchPressed();
+    bool enableDisableMotorWhenPosReached();
+    bool disableDisableMotorWhenPosReached();
     bool clearEStop();
 
     //Internal I2C Abstraction

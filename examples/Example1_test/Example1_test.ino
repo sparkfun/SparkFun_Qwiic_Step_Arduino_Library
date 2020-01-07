@@ -17,14 +17,33 @@ void setup() {
 //  Serial.print("The firmware version is: 0x");
 //  int version = motor.getFirmwareVersion();
 //  Serial.println(version, HEX);
-//
-//  motor.QSetMaxSpeed(800);
-//  motor.QSetSpeed(300);
-//  motor.QSetAcceleration(950);
-//  motor.QMoveTo(400);
-//
-//  motor.HalfStepMode();
-//  
+
+//  motor.enablePositionReachedInterrupt(); //set bit 0 to 1. register should become 0x01.
+
+//  motor.fullStepMode();
+  
+  motor.QSetMaxSpeed(800);
+  motor.QSetSpeed(300);
+  motor.QSetAcceleration(950);
+  
+  motor.QMove(400);
+
+  delay(4000);
+
+  motor.QMove(400);
+  while(1);
+  
+
+  //wait 3 seconds
+  //should see "Position reached!" and "Hello" on slave serial monitor
+  delay(3000);
+  
+  //clear position reached interrupt flag
+  //position should still be "isReached" but interrupt pin should go high
+  //should only see "Position reached!" on slave serial monitor
+  Serial.println("Hello, I'm clearing interrupt flag");
+  motor.clearIsReachedInterrupt();
+
 //  Serial.print("Max speed: ");
 //  Serial.println(motor.QGetMaxSpeed());
 //  Serial.print("Set speed: ");
@@ -32,16 +51,17 @@ void setup() {
 //  Serial.print("Acceleration: ");
 //  Serial.println(motor.QGetAcceleration());
 
-//  motor.stopWhenLimSwitchPressedEnable();
-//  motor.powerDownPosReachedEnable();
-
-  motor.enablePositionReachedInterrupt();
-  motor.enableLimSwitchPressedInterrupt();
-  
-//  motor.stopWhenLimSwitchPressedDisable();
-//  motor.powerDownPosReachedDisable();
+//  motor.enablePositionReachedInterrupt(); //set bit 0 to 1. register should become 0x01.
 //  motor.disablePositionReachedInterrupt();
+  
+//  motor.enableLimSwitchPressedInterrupt(); //set bit 1 to 1. regiter should beceom 0x03
 //  motor.disableLimSwitchPressedInterrupt();
+
+//  motor.enableStopWhenLimSwitchPressed();
+//  motor.disableStopWhenLimSwitchPressed();
+
+//  motor.enableDisableMotorWhenPosReached();
+//  motor.disableDisableMotorWhenPosReached();
 }
 
 void loop() {

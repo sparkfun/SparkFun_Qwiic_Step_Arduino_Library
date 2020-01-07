@@ -136,7 +136,7 @@ uint8_t QwiicStep::QGetStepMode()
 
 /*------------------------- Motor Stepping ------------------------------*/
 
-bool QwiicStep::FullStepMode()
+bool QwiicStep::fullStepMode()
 {
     deviceConfigBitField deviceConfigure;
     deviceConfigure.MS1 = 0;
@@ -145,7 +145,7 @@ bool QwiicStep::FullStepMode()
     return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
-bool QwiicStep::HalfStepMode()
+bool QwiicStep::halfStepMode()
 {
     deviceConfigBitField deviceConfigure;
     deviceConfigure.MS1 = 1;
@@ -154,7 +154,7 @@ bool QwiicStep::HalfStepMode()
     return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
-bool QwiicStep::QuarterStepMode()
+bool QwiicStep::quarterStepMode()
 {
     deviceConfigBitField deviceConfigure;
     deviceConfigure.MS1 = 0;
@@ -163,7 +163,7 @@ bool QwiicStep::QuarterStepMode()
     return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
-bool QwiicStep::EighthStepMode()
+bool QwiicStep::eighthStepMode()
 {
     deviceConfigBitField deviceConfigure;
     deviceConfigure.MS1 = 1;
@@ -172,7 +172,7 @@ bool QwiicStep::EighthStepMode()
     return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
-bool QwiicStep::SixteenthStepMode()
+bool QwiicStep::sixteenthStepMode()
 {
     deviceConfigBitField deviceConfigure;
     deviceConfigure.MS1 = 1;
@@ -183,72 +183,94 @@ bool QwiicStep::SixteenthStepMode()
 
 /*---------------------- Interrupt Configuration ------------------------*/
 
-bool QwiicStep::stopWhenLimSwitchPressedEnable()
-{
-    deviceConfigBitField deviceConfigure;
-    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
-    deviceConfigure.stopOnLimitSwitchPress = 1;
-    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
-}
-
-bool QwiicStep::stopWhenLimSwitchPressedDisable()
-{
-    deviceConfigBitField deviceConfigure;
-    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
-    deviceConfigure.stopOnLimitSwitchPress = 0;
-    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
-}
-
-bool QwiicStep::powerDownPosReachedEnable()
-{
-    deviceConfigBitField deviceConfigure;
-    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
-    deviceConfigure.powerDownPositionReached = 1;
-    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
-}
-
-bool QwiicStep::powerDownPosReachedDisable()
-{
-    deviceConfigBitField deviceConfigure;
-    read(DEVICE_CONFIG, deviceConfigure.byteWrapped);
-    deviceConfigure.powerDownPositionReached = 0;
-    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
-}
-
-//these are not really working yetttttt
 bool QwiicStep::enablePositionReachedInterrupt()
 {
-    interruptEnableBitField intEnable;
-    read(INTERRUPT_ENABLE, intEnable.byteWrapped);
-    intEnable.requestedPosReachedEnable = 1;
-    return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
+    interruptConfigBitField intConfig;
+    read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
+    // Serial.println(intConfig.byteWrapped);
+    intConfig.requestedPosReachedEnable = 1;
+    // Serial.println(intConfig.byteWrapped);
+    return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
+
+    //DEBUG: not sure why any of this stuff doesn't really work??
+    // uint8_t val = 0xAB;
+    // Serial.print("Write value is: 0x");
+    // Serial.println(val, HEX);
+    // write(INTERRUPT_ENABLE, (uint8_t *)&val, sizeof(val));
+    // uint8_t temp;
+    // read(INTERRUPT_ENABLE, (uint8_t *)&temp, sizeof(temp));
+    // Serial.print("Read value is: 0x");
+    // Serial.println(temp, HEX);
 }
 
 bool QwiicStep::disablePositionReachedInterrupt()
 {
-    interruptEnableBitField intEnable;
-    read(INTERRUPT_ENABLE, intEnable.byteWrapped);
-    intEnable.requestedPosReachedEnable = 0;
-    return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
+    interruptConfigBitField intConfig;
+    read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
+    intConfig.requestedPosReachedEnable = 0;
+    return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
+}
+
+bool QwiicStep::clearIsReachedInterrupt()
+{
+    interruptConfigBitField intConfig;
+    read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
+    intConfig.requestedPosReachedIntTriggered = 0;
+    return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
 }
 
 bool QwiicStep::enableLimSwitchPressedInterrupt()
 {
-    interruptEnableBitField intEnable;
-    read(INTERRUPT_ENABLE, intEnable.byteWrapped);
-    intEnable.limSwitchPressedEnable = 1;
-    return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
+    interruptConfigBitField intConfig;
+    read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
+    // Serial.println(intConfig.byteWrapped);
+    intConfig.limSwitchPressedEnable = 1;
+    // Serial.println(intConfig.byteWrapped);
+    return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
 }
 
 bool QwiicStep::disableLimSwitchPressedInterrupt()
 {
-    interruptEnableBitField intEnable;
-    read(INTERRUPT_ENABLE, intEnable.byteWrapped);
-    intEnable.limSwitchPressedEnable = 0;
-    return (write(INTERRUPT_ENABLE, intEnable.byteWrapped));
+    interruptConfigBitField intConfig;
+    read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
+    intConfig.limSwitchPressedEnable = 0;
+    return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
+}
+
+bool QwiicStep::enableStopWhenLimSwitchPressed()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
+    deviceConfigure.stopOnLimitSwitchPress = 1;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
+
+bool QwiicStep::disableStopWhenLimSwitchPressed()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
+    deviceConfigure.stopOnLimitSwitchPress = 0;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
+
+bool QwiicStep::enableDisableMotorWhenPosReached()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
+    deviceConfigure.disableMotorPositionReached = 1;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
+
+bool QwiicStep::disableDisableMotorWhenPosReached()
+{
+    deviceConfigBitField deviceConfigure;
+    read(DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
+    deviceConfigure.disableMotorPositionReached = 0;
+    return (write(DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
 //User needs to manually clear eStop bit when an emergency stop has occurred
+//DEBUG: still need to test this
 bool QwiicStep::clearEStop()
 {
     statusRegisterBitField status;
@@ -277,7 +299,7 @@ bool QwiicStep::read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)
 }
 
 //Overloaded function declaration
-//Use when just writing one byte of data
+//Use when reading just one byte of data
 bool QwiicStep::read(Qwiic_Step_Register reg, uint8_t data)
 {
     return (read(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
@@ -297,7 +319,7 @@ bool QwiicStep::write(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)
 }
 
 //Overloaded function declaration
-//Use when just writing one byte of data
+//Use when writing just one byte of data
 bool QwiicStep::write(Qwiic_Step_Register reg, uint8_t data)
 {
     return (write(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
