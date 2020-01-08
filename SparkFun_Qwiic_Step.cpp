@@ -127,6 +127,7 @@ float QwiicStep::QGetAcceleration()
     return acceleration;
 }
 
+//DEBUG-- not sure what this is supposed to be yettttt
 uint8_t QwiicStep::QGetStepMode()
 {
     uint8_t mode;

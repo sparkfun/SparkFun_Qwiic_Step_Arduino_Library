@@ -6,26 +6,19 @@ void setup() {
   Serial.println("Qwiic step examples");
   Wire.begin(); //Join I2C bus
 
-  //check if button will acknowledge over I2C
+  //check if motor will acknowledge over I2C
   if (motor.begin() == false) {
     Serial.println("Device did not acknowledge! Freezing.");
     while (1);
   }
   Serial.println("Motor acknowledged.");
 
-  motor.QSetMaxSpeed(800);
-  motor.QSetSpeed(300);
-  motor.QSetAcceleration(950);
-//  delay(500);
-  motor.QMove(400);
+  //Get firmware version
+  Serial.print("The firmware version is: 0x");
+  int version = motor.getFirmwareVersion();
+  Serial.println(version, HEX);
+}
 
-  delay(2000);
-  motor.QMove(400);
+void loop() {
 
-//  delay(2000);
-//  motor.QMove(400);
-//
-//  delay(2000);
-//  motor.QMove(400);
-  while (1);
 }
