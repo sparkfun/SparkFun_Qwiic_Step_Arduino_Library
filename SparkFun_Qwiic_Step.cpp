@@ -188,20 +188,8 @@ bool QwiicStep::enablePositionReachedInterrupt()
 {
     interruptConfigBitField intConfig;
     read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
-    // Serial.println(intConfig.byteWrapped);
     intConfig.requestedPosReachedEnable = 1;
-    // Serial.println(intConfig.byteWrapped);
     return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
-
-    //DEBUG: not sure why any of this stuff doesn't really work??
-    // uint8_t val = 0xAB;
-    // Serial.print("Write value is: 0x");
-    // Serial.println(val, HEX);
-    // write(INTERRUPT_ENABLE, (uint8_t *)&val, sizeof(val));
-    // uint8_t temp;
-    // read(INTERRUPT_ENABLE, (uint8_t *)&temp, sizeof(temp));
-    // Serial.print("Read value is: 0x");
-    // Serial.println(temp, HEX);
 }
 
 bool QwiicStep::disablePositionReachedInterrupt()
@@ -224,9 +212,7 @@ bool QwiicStep::enableLimSwitchPressedInterrupt()
 {
     interruptConfigBitField intConfig;
     read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
-    // Serial.println(intConfig.byteWrapped);
     intConfig.limSwitchPressedEnable = 1;
-    // Serial.println(intConfig.byteWrapped);
     return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
 }
 
@@ -235,6 +221,15 @@ bool QwiicStep::disableLimSwitchPressedInterrupt()
     interruptConfigBitField intConfig;
     read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
     intConfig.limSwitchPressedEnable = 0;
+    return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
+}
+
+//DEBUG: still need to test
+bool QwiicStep::clearLimSwitchPressInterrupt()
+{
+    interruptConfigBitField intConfig;
+    read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
+    intConfig.limSwitchPressedIntTriggered = 0;
     return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
 }
 

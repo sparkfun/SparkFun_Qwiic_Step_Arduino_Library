@@ -28,7 +28,7 @@ void setup(){
   //clear position reached interrupt flag
   //motor status should still be "isReached" but interrupt pin should go high
   //DEBUG: should only see "Position reached!" on slave serial monitor
-  Serial.println("Hello, I'm clearing interrupt flag");
+  Serial.println("Hello, I'm clearing the interrupt flag");
   motor.clearIsReachedInterrupt();
 } 
 

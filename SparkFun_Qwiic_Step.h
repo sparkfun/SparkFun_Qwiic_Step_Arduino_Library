@@ -51,6 +51,7 @@ public:
     bool clearIsReachedInterrupt();
     bool enableLimSwitchPressedInterrupt();
     bool disableLimSwitchPressedInterrupt();
+    bool clearLimSwitchPressInterrupt();
     bool enableStopWhenLimSwitchPressed();
     bool disableStopWhenLimSwitchPressed();
     bool enableDisableMotorWhenPosReached();
