@@ -16,11 +16,16 @@ void setup() {
   motor.QSetMaxSpeed(800);
   motor.QSetSpeed(300);
   motor.QSetAcceleration(950);
-
+//  delay(500);
   motor.QMove(400);
 
-//  delay(4000);
+  delay(2000);
+  motor.QMove(400);
+
+//  delay(2000);
+//  motor.QMove(400);
 //
+//  delay(2000);
 //  motor.QMove(400);
   while (1);
 }

@@ -18,20 +18,14 @@ void setup() {
 //  int version = motor.getFirmwareVersion();
 //  Serial.println(version, HEX);
 
-//  motor.enablePositionReachedInterrupt(); //set bit 0 to 1. register should become 0x01.
+  motor.enablePositionReachedInterrupt(); //set bit 0 to 1. register should become 0x01.
 
 //  motor.fullStepMode();
   
   motor.QSetMaxSpeed(800);
   motor.QSetSpeed(300);
   motor.QSetAcceleration(950);
-  
   motor.QMove(400);
-
-  delay(4000);
-
-  motor.QMove(400);
-  while(1);
   
 
   //wait 3 seconds
