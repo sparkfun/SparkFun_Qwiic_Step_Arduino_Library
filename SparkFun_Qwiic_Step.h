@@ -58,6 +58,14 @@ public:
     bool disableDisableMotorWhenPosReached();
     bool clearEStop();
 
+    //Motor run options
+    bool QRun();
+    bool QRunSpeed();
+    bool QRunSpeedToPosition();
+    bool QStop();
+    bool QDisableOutputs();
+    bool QEnableOutputs();
+
     //Internal I2C Abstraction
     bool read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize);
     bool read(Qwiic_Step_Register reg, uint8_t data);

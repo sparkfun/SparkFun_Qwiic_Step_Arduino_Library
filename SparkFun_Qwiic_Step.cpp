@@ -224,7 +224,6 @@ bool QwiicStep::disableLimSwitchPressedInterrupt()
     return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
 }
 
-//DEBUG: still need to test
 bool QwiicStep::clearLimSwitchPressInterrupt()
 {
     statusRegisterBitField status;
@@ -272,6 +271,69 @@ bool QwiicStep::clearEStop()
     statusRegisterBitField status;
     status.eStopped = 0;
     return (write(STATUS, status.byteWrapped));
+}
+
+//DEBUG: still need to test all of these
+/*---------------------------- Run options ------------------------------*/
+
+bool QwiicStep::QRun()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.run = 1;
+    deviceControl.runSpeed = 0;
+    deviceControl.runSpeedToPosition = 0;
+    deviceControl.stop = 0;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+}
+
+bool QwiicStep::QRunSpeed()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.run = 0;
+    deviceControl.runSpeed = 1;
+    deviceControl.runSpeedToPosition = 0;
+    deviceControl.stop = 0;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+}
+
+bool QwiicStep::QRunSpeedToPosition()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.run = 0;
+    deviceControl.runSpeed = 0;
+    deviceControl.runSpeedToPosition = 1;
+    deviceControl.stop = 0;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+}
+
+bool QwiicStep::QStop()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.run = 0;
+    deviceControl.runSpeed = 0;
+    deviceControl.runSpeedToPosition = 0;
+    deviceControl.stop = 1;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+}
+
+bool QwiicStep::QDisableOutputs()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.disableMotor = 1;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+}
+
+bool QwiicStep::QEnableOutputs()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.disableMotor = 0;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
 }
 
 /*---------------------- Internal I2C Abstraction -----------------------*/
