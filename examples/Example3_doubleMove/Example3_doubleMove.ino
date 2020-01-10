@@ -34,11 +34,14 @@ void setup() {
     while (1);
   }
   Serial.println("Motor acknowledged.");
-  
-  motor.QSetMaxSpeed(800);
+
+  //Write accelStepper parameters
   motor.QSetAcceleration(950);
   //Move once
   motor.QMove(400);
+
+  //Tell the motor how to run
+  motor.QRun();
 
   //Wait
   delay(2000);

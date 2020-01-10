@@ -43,10 +43,13 @@ void setup(){
 //  motor.sixteenthStepMode();
 
   //Set/write all accelstepper parameters
-  motor.QSetMaxSpeed(800);
-  motor.QSetSpeed(300);
-  motor.QSetAcceleration(950);
+  //Acceleration value needs to be greater than 0
+  motor.QSetAcceleration(900);
+  //Relative number of steps to move
   motor.QMove(400);
+
+  //Now, tell the motor to run
+  motor.QRun();
 
   //Get/read the previously set accelstepper parameters
   Serial.print("Max speed: ");

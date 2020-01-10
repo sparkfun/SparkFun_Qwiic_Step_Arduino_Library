@@ -38,10 +38,11 @@ void setup(){
   motor.enablePositionReachedInterrupt();
 
   //move motor
-  motor.QSetMaxSpeed(800);
-  motor.QSetSpeed(300);
   motor.QSetAcceleration(950);
   motor.QMove(400);
+
+  //Tell the motor how to run
+  motor.QRun();
 
   //wait 3 seconds
   //DEBUG: should see "Position reached!" and "Hello" on slave serial monitor
