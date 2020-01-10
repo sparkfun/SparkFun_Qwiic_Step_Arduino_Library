@@ -227,10 +227,10 @@ bool QwiicStep::disableLimSwitchPressedInterrupt()
 //DEBUG: still need to test
 bool QwiicStep::clearLimSwitchPressInterrupt()
 {
-    interruptConfigBitField intConfig;
-    read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
-    intConfig.limSwitchPressedIntTriggered = 0;
-    return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
+    statusRegisterBitField status;
+    read(STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
+    status.isLimited = 0;
+    return (write(STATUS, status.byteWrapped));
 }
 
 bool QwiicStep::enableStopWhenLimSwitchPressed()
