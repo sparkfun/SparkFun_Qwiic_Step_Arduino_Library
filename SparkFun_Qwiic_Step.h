@@ -46,12 +46,12 @@ public:
     bool sixteenthStepMode();
 
     //Interrupt Enable
-    bool enablePositionReachedInterrupt();
-    bool disablePositionReachedInterrupt();
-    bool clearIsReachedInterrupt();
-    bool enableLimSwitchPressedInterrupt();
-    bool disableLimSwitchPressedInterrupt();
-    bool clearLimSwitchPressInterrupt();
+    bool enableIsReachedInterrupt();
+    bool disableIsReachedInterrupt();
+    bool clearIsReached();
+    bool enableIsLimitedInterrupt();
+    bool disableIsLimitedInterrupt();
+    bool clearIsLimited();
     bool enableStopWhenLimSwitchPressed();
     bool disableStopWhenLimSwitchPressed();
     bool enableDisableMotorWhenPosReached();

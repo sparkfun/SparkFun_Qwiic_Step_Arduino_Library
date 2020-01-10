@@ -1,12 +1,4 @@
-#include <Wire.h>
 #include <SparkFun_Qwiic_Step.h>
-
-//DEBUG: not sure what this is...
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
 
 /*--------------------------- Device Status -----------------------------*/
 bool QwiicStep::begin(uint8_t address, TwoWire &wirePort)
@@ -184,48 +176,48 @@ bool QwiicStep::sixteenthStepMode()
 
 /*---------------------- Interrupt Configuration ------------------------*/
 
-bool QwiicStep::enablePositionReachedInterrupt()
+bool QwiicStep::enableIsReachedInterrupt()
 {
     interruptConfigBitField intConfig;
     read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
-    intConfig.requestedPosReachedEnable = 1;
+    intConfig.isReachedInterruptEnable = 1;
     return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
 }
 
-bool QwiicStep::disablePositionReachedInterrupt()
+bool QwiicStep::disableIsReachedInterrupt()
 {
     interruptConfigBitField intConfig;
     read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
-    intConfig.requestedPosReachedEnable = 0;
+    intConfig.isReachedInterruptEnable = 0;
     return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
 }
 
-bool QwiicStep::clearIsReachedInterrupt()
+bool QwiicStep::clearIsReached()
+{
+    statusRegisterBitField status;
+    read(STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
+    status.isReached = 0;
+    return (write(STATUS, status.byteWrapped));
+}
+
+bool QwiicStep::enableIsLimitedInterrupt()
 {
     interruptConfigBitField intConfig;
     read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
-    intConfig.requestedPosReachedIntTriggered = 0;
+    intConfig.isLimitedInterruptEnable = 1;
     return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
 }
 
-bool QwiicStep::enableLimSwitchPressedInterrupt()
+bool QwiicStep::disableIsLimitedInterrupt()
 {
     interruptConfigBitField intConfig;
     read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
-    intConfig.limSwitchPressedEnable = 1;
-    return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
-}
-
-bool QwiicStep::disableLimSwitchPressedInterrupt()
-{
-    interruptConfigBitField intConfig;
-    read(INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
-    intConfig.limSwitchPressedEnable = 0;
+    intConfig.isLimitedInterruptEnable = 0;
     return (write(INTERRUPT_CONFIG, intConfig.byteWrapped));
 }
 
 //DEBUG: still need to test
-bool QwiicStep::clearLimSwitchPressInterrupt()
+bool QwiicStep::clearIsLimited()
 {
     statusRegisterBitField status;
     read(STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));

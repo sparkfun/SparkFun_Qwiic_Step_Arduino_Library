@@ -24,10 +24,9 @@ enum Qwiic_Step_Register : uint8_t
 typedef union {
     struct
     {
-        bool requestedPosReachedEnable : 1;
-        bool requestedPosReachedIntTriggered : 1;
-        bool limSwitchPressedEnable : 1;
-        bool : 5;
+        bool isReachedInterruptEnable : 1;
+        bool isLimitedInterruptEnable : 1;
+        bool : 6;
     };
     uint8_t byteWrapped;
 } interruptConfigBitField;
