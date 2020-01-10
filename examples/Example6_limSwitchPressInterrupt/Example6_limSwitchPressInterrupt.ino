@@ -40,10 +40,11 @@ void setup(){
   //enable interrupt trigger when limit switch is pressed
   motor.enableLimSwitchPressedInterrupt();
 
+  Serial.println("Please press limit switch");
   //assume that someone pressed the limit switch at this point
 
-  //let 5 seconds pass by
-  delay(5000);
+  //let 2 seconds pass by
+  delay(2000);
 
   //clear the limit switch press flag
   Serial.println("Hello, I'm clearing the interrupt flag");
