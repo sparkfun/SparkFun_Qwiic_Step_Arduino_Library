@@ -35,6 +35,7 @@ void setup(){
   }
   Serial.println("Motor acknowledged.");
 
+  //Pick whichever micro-stepping setting you would like
   motor.fullStepMode();
 //  motor.halfStepMode();
 //  motor.quarterStepMode();
