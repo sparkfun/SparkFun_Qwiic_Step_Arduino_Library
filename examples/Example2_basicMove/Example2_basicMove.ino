@@ -40,21 +40,34 @@ void setup()
   Serial.println("Motor acknowledged.");
 
   //Pick whichever micro-stepping setting you would like
-  motor.fullStepMode();
+  // motor.fullStepMode();
   //  motor.halfStepMode();
   //  motor.quarterStepMode();
   //  motor.eighthStepMode();
   //  motor.sixteenthStepMode();
 
   //Set/write all accelstepper parameters
-  motor.setMaxSpeed(805.2);
-  motor.setSpeed(351.43);
-  motor.setAcceleration(950.3);
+  //We must set a max speed and accel before a move command for 'normal looking' operation
+  //  motor.setMaxSpeed(500); //There is a limit here. 1000 at full step fails to rotate one full. If maxSpeed is greater than the ability for the mega to service run() then the stepper drops steps.
+  //  motor.setSpeed(351.43); //Not needed in run mode
+  //  motor.setAcceleration(100);
 
   motor.move(200); //Turn one exact rotation of a 200 step stepper motor
   //motor.move(16 * 200); //Turn one exact rotation of a 200 step stepper motor with 1/16th step mode
 
+  Serial.print("Move: ");
+  Serial.println(motor.getMove());
+  //Serial.print("MoveTo: ");
+  //Serial.println(motor.getMoveTo());
+
+  delay(1000);
+  motor.stop(); //Stop motor with current speed and acceleration parameters. This will cause the motor to drift to a stop (not immediate).
+
+  //todo: create .hardStop() that stops faster. Maybe by disabling the driver IC?
+
   //Get/read the previously set accelstepper parameters
+  Serial.print("Move: ");
+  Serial.println(motor.getMove());
   Serial.print("Max speed: ");
   Serial.println(motor.getMaxSpeed());
   Serial.print("Set speed: ");

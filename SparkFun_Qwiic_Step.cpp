@@ -8,10 +8,10 @@ bool QwiicStep::begin(uint8_t address, TwoWire &wirePort)
 
     //Setup motor with default step size, speed, maxSpeed and acceleration
     //So that user can simply .move() from their sketch
-    sixteenthStepMode();
-    setMaxSpeed(800);
-    setSpeed(300);
-    setAcceleration(950);
+    fullStepMode();
+    setMaxSpeed(800); //4 full rotations per second on a 200 step motor
+    //setSpeed(300); //Only set if we are in runSpeed mode, otherwise library causes motor to twitch slowly.
+    setAcceleration(200);
 
     //return true if the device is connected and the device ID is what we expect
     return (isConnected());
@@ -81,8 +81,9 @@ uint8_t QwiicStep::getI2Caddress()
 bool QwiicStep::stop()
 {
     bool status = true;
-    status &= write(QS_MOVE, 0);
-    status &= write(QS_MOVE_TO, 0);
+    long stopValue = 0; //Force a four byte write to register
+    status &= write(QS_MOVE, (uint8_t *)&stopValue, (uint8_t)sizeof(stopValue));
+    status &= write(QS_MOVE_TO, (uint8_t *)&stopValue, (uint8_t)sizeof(stopValue));
     return (status);
 }
 
