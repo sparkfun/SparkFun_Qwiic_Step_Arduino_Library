@@ -36,6 +36,7 @@ public:
     float getMaxSpeed();
     float getSpeed();
     float getAcceleration();
+    long getMove();
     long getMoveTo();
     uint8_t getStepMode();
 

@@ -1,5 +1,6 @@
 /******************************************************************************
-  Tests motor movement functions. We can get and set the current turning values.
+  Move a 200 step stepper motor exactly one rotation.
+  Shows how to change the microstep value as well as the speed and acceleration settings.
 
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
@@ -20,43 +21,48 @@
   Distributed as-is; no warranty is given.
 ******************************************************************************/
 
-#include "SparkFun_Qwiic_Step.h"  //Click here to get the library: http://librarymanager/All#Qwiic_Step by SparkFun
+#include "SparkFun_Qwiic_Step.h" //Click here to get the library: http://librarymanager/All#Qwiic_Step by SparkFun
 QwiicStep motor;
 
-void setup(){
+void setup()
+{
   Serial.begin(115200);
   Serial.println("Qwiic step examples");
   Wire.begin(); //Join I2C bus
 
   //check if motor will acknowledge over I2C
-  if (motor.begin() == false){
+  if (motor.begin() == false)
+  {
     Serial.println("Device did not acknowledge! Freezing.");
-    while(1);
+    while (1)
+      ;
   }
   Serial.println("Motor acknowledged.");
 
   //Pick whichever micro-stepping setting you would like
   motor.fullStepMode();
-//  motor.halfStepMode();
-//  motor.quarterStepMode();
-//  motor.eighthStepMode();
-//  motor.sixteenthStepMode();
+  //  motor.halfStepMode();
+  //  motor.quarterStepMode();
+  //  motor.eighthStepMode();
+  //  motor.sixteenthStepMode();
 
   //Set/write all accelstepper parameters
-  motor.QSetMaxSpeed(800);
-  motor.QSetSpeed(300);
-  motor.QSetAcceleration(950);
-  motor.QMove(400);
+  motor.setMaxSpeed(805.2);
+  motor.setSpeed(351.43);
+  motor.setAcceleration(950.3);
+
+  motor.move(200); //Turn one exact rotation of a 200 step stepper motor
+  //motor.move(16 * 200); //Turn one exact rotation of a 200 step stepper motor with 1/16th step mode
 
   //Get/read the previously set accelstepper parameters
   Serial.print("Max speed: ");
-  Serial.println(motor.QGetMaxSpeed());
+  Serial.println(motor.getMaxSpeed());
   Serial.print("Set speed: ");
-  Serial.println(motor.QGetSpeed());
+  Serial.println(motor.getSpeed());
   Serial.print("Acceleration: ");
-  Serial.println(motor.QGetAcceleration());
+  Serial.println(motor.getAcceleration());
 }
 
-void loop(){
-  
+void loop()
+{
 }

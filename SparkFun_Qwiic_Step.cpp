@@ -6,8 +6,9 @@ bool QwiicStep::begin(uint8_t address, TwoWire &wirePort)
     _deviceAddress = address; //grab the address that the motor is on
     _i2cPort = &wirePort;     //grab the port that the user wants to use
 
-    //Setup motor with default speed, maxSpeed and acceleration
+    //Setup motor with default step size, speed, maxSpeed and acceleration
     //So that user can simply .move() from their sketch
+    sixteenthStepMode();
     setMaxSpeed(800);
     setSpeed(300);
     setAcceleration(950);
@@ -100,14 +101,22 @@ bool QwiicStep::setAcceleration(float acceleration)
     return (write(QS_ACCELERATION, (uint8_t *)&acceleration, (uint8_t)sizeof(acceleration)));
 }
 
-bool QwiicStep::moveTo(long absolute)
-{
-    return (write(QS_MOVE_TO, (uint8_t *)&absolute, (uint8_t)sizeof(absolute)));
-}
-
 bool QwiicStep::move(long relative)
 {
     return (write(QS_MOVE, (uint8_t *)&relative, (uint8_t)sizeof(relative)));
+}
+
+//Returns the value currently in the Move register
+long QwiicStep::getMove()
+{
+    long moveValue;
+    read(QS_MOVE, (uint8_t *)&moveValue, (uint8_t)sizeof(moveValue));
+    return (moveValue);
+}
+
+bool QwiicStep::moveTo(long absolute)
+{
+    return (write(QS_MOVE_TO, (uint8_t *)&absolute, (uint8_t)sizeof(absolute)));
 }
 
 bool QwiicStep::setStepMode(uint8_t mode)
