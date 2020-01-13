@@ -33,15 +33,13 @@ void setup() {
     Serial.println("Device did not acknowledge! Freezing.");
   }
   Serial.println("Motor acknowledged.");
-
-  //DEBUG: shouldn't need to use thisss....
-  motor.fullStepMode();
+  
   //Set the motor speed
   //Speeds are in steps per second.
   //Positive is clockwise, negative is counter clockwise.
   //Speeds of more than 1000 are unreliable.
   motor.QSetMaxSpeed(1000);
-  motor.QSetSpeed(600);
+  motor.QSetSpeed(-350);
 
   //Tell the motor to run at that speed... forever
   motor.QRunSpeed();

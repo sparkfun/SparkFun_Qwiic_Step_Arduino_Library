@@ -46,12 +46,13 @@ void setup() {
   motor.QRunSpeed();
 
   //At some point, press the limit switch
-  Serial.println("Please press the limit switch");
-  //Motor should stop turning
+  Serial.println("Please press the limit switch");  //Motor should stop turning
 
-//  //Wait 10 seconds and start turning again
-//  delay(10000);
-//  motor.QMove(400);
+  //Wait 10 seconds and clear interrupt
+  delay(10000);
+  motor.clearLimSwitchPressInterrupt();
+
+  //DEBUG: how should we start turning again?
 }
 
 void loop() {

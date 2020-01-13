@@ -1,5 +1,5 @@
 /******************************************************************************
-  Tests the runSpeedToPosition option from accelStepper library.
+  Tests the stop function from accelStepper library.
 
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
@@ -20,10 +20,10 @@
   Distributed as-is; no warranty is given.
 ******************************************************************************/
 
-#include "SparkFun_Qwiic_Step.h" //Click here to get the library: http://librarymanager/All#Qwiic_Step by SparkFun
+#include "SparkFun_Qwiic_Step.h"  //Click here to get the library: http://librarymanager/All#Qwiic_Step by SparkFun
 QwiicStep motor;
 
-void setup(){
+void setup() {
   Serial.begin(115200);
   Serial.println("Qwiic step examples");
   Wire.begin(); //Join I2C bus
@@ -34,19 +34,21 @@ void setup(){
   }
   Serial.println("Motor acknowledged.");
 
-  //DEBUG: I have no idea why this doesnt workkkkkkkk
-  //DEBUG: shouldn't need this
-  motor.fullStepMode();
-  
-  //Set motor parameters
-  motor.QMoveTo(200);
-  motor.QSetSpeed(200);
+  //Set the motor speed
+  //Speeds are in steps per second
+  //Positive is clockwise, negative is counter clockwise.
+  //Speeds of more that 1000 are unreliable.
+  motor.QSetMaxSpeed(1000);
+  motor.QSetSpeed(600);
 
-  //Tell the motor run at a constant speed to the destination
-  //This means no acceleration
-  motor.QRunSpeedToPosition();
+  //Tell the motor to run at the speed... forever
+  motor.QRunSpeed();
+
+  //Stop after 5 seconds
+  delay(5000);
+  motor.QStop();
 }
 
-void loop(){
-  
+void loop() {
+
 }
