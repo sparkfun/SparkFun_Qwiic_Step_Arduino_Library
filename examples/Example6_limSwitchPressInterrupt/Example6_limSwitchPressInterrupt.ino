@@ -54,6 +54,7 @@ void setup()
 
   Serial.println("Running motor until limit switch is pressed or 8 seconds goes by");
 
+  motor.setAcceleration(5);
   motor.move(1000); //Will run with default maxSpeed/accel values.
 
   long startTime = millis();
@@ -68,11 +69,18 @@ void setup()
       break;
     }
 
+    //Polling method
+    if (motor.isReached() == true)
+    {
+      Serial.println("Motor reached requested position.");
+      break;
+    }
+
     delay(10);
 
     if (millis() - startTime > 8000) //Timeout after 8s
     {
-      Serial.println("Interrupt did not trigger. Do you have the correct interrupt pin wired?");
+      Serial.println("Motor failed to get to position in time and interrupt didn't trigger. Do you have the correct interrupt pin wired?");
       break;
     }
   }
