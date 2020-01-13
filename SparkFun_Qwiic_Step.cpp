@@ -146,7 +146,15 @@ float QwiicStep::getAcceleration()
     return acceleration;
 }
 
-//DEBUG-- not sure what this is supposed to be yettttt
+//Returns the current status register
+uint8_t QwiicStep::getStatus()
+{
+    uint8_t stat;
+    read(QS_STATUS, (uint8_t *)&stat, (uint8_t)sizeof(stat));
+    return stat;
+}
+
+//Returns the bits set that control the micro step amount
 uint8_t QwiicStep::getStepMode()
 {
     uint8_t mode;
@@ -203,6 +211,16 @@ bool QwiicStep::sixteenthStepMode()
 
 /*---------------------- Interrupt Configuration ------------------------*/
 
+//We must clear all bits that can cause the interrupt pin to go low
+//See interruptConfigBitField for possible related bits
+bool QwiicStep::clearInterrupts()
+{
+    statusRegisterBitField status;
+    read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
+    status.isLimited = 0;
+    status.isReached = 0;
+    return (write(QS_STATUS, status.byteWrapped));
+}
 bool QwiicStep::enableIsReachedInterrupt()
 {
     interruptConfigBitField intConfig;
@@ -225,6 +243,60 @@ bool QwiicStep::clearIsReached()
     read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
     status.isReached = 0;
     return (write(QS_STATUS, status.byteWrapped));
+}
+
+bool QwiicStep::isReached()
+{
+    statusRegisterBitField status;
+    read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
+    if (status.isReached == true)
+        return (true);
+    return (false);
+}
+
+bool QwiicStep::isRunning()
+{
+    statusRegisterBitField status;
+    read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
+    if (status.isRunning == true)
+        return (true);
+    return (false);
+}
+
+bool QwiicStep::isAccelerating()
+{
+    statusRegisterBitField status;
+    read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
+    if (status.isAccelerating == true)
+        return (true);
+    return (false);
+}
+
+bool QwiicStep::isDecelerating()
+{
+    statusRegisterBitField status;
+    read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
+    if (status.isDecelerating == true)
+        return (true);
+    return (false);
+}
+
+bool QwiicStep::isLimited()
+{
+    statusRegisterBitField status;
+    read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
+    if (status.isLimited == true)
+        return (true);
+    return (false);
+}
+
+bool QwiicStep::isEStopped()
+{
+    statusRegisterBitField status;
+    read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
+    if (status.isEStopped == true)
+        return (true);
+    return (false);
 }
 
 bool QwiicStep::enableIsLimitedInterrupt()
@@ -288,7 +360,7 @@ bool QwiicStep::disableDisableMotorWhenPosReached()
 bool QwiicStep::clearEStop()
 {
     statusRegisterBitField status;
-    status.eStopped = 0;
+    status.isEStopped = 0;
     return (write(QS_STATUS, status.byteWrapped));
 }
 

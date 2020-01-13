@@ -33,6 +33,8 @@ public:
     bool moveTo(long absolute);
     bool move(long relative);
     bool setStepMode(uint8_t mode);
+
+    byte getStatus();
     float getMaxSpeed();
     float getSpeed();
     float getAcceleration();
@@ -47,10 +49,8 @@ public:
     bool eighthStepMode();
     bool sixteenthStepMode();
 
-    //Interrupt Enable
-    bool enableIsReachedInterrupt();
-    bool disableIsReachedInterrupt();
-    bool clearIsReached();
+    //Interrupt Handling
+    bool clearInterrupts();
     bool enableIsLimitedInterrupt();
     bool disableIsLimitedInterrupt();
     bool clearIsLimited();
@@ -59,6 +59,16 @@ public:
     bool enableDisableMotorWhenPosReached();
     bool disableDisableMotorWhenPosReached();
     bool clearEStop();
+
+    bool isReached(); //Returns true if isReached bit is set
+    bool clearIsReached();
+    bool enableIsReachedInterrupt();
+    bool disableIsReachedInterrupt();
+    bool isRunning();
+    bool isAccelerating();
+    bool isDecelerating();
+    bool isLimited();
+    bool isEStopped();
 
     //Internal I2C Abstraction
     bool read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize);

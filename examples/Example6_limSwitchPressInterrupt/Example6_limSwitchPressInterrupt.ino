@@ -1,6 +1,6 @@
 /******************************************************************************
-  Tests the setting and clearing of the interrupt that occurs when the limit 
-  switch is pressed.
+  Demonstrates the isLimited interrupt. The motor will run until an interrupt occurs
+  indicating the limit switch on Qwiic Step has been pressed.
 
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
@@ -22,35 +22,92 @@
   Distributed as-is; no warranty is given.
 ******************************************************************************/
 
-#include "SparkFun_Qwiic_Step.h"  //Click here to get the library: http://librarymanager/All#Qwiic_Step by SparkFun
+#include "SparkFun_Qwiic_Step.h" //Click here to get the library: http://librarymanager/All#Qwiic_Step by SparkFun
 QwiicStep motor;
 
-void setup(){
+#define QS_INT 2 //Any GPIO will work. Connect pin 2 on your board to the INT pin on Qwiic Step
+
+void setup()
+{
   Serial.begin(115200);
   Serial.println("Qwiic step examples");
   Wire.begin(); //Join I2C bus
 
+  pinMode(QS_INT, INPUT_PULLUP);
+
   //check if the motor will acknowledge I2C
-  if (motor.begin() == false){
+  if (motor.begin() == false)
+  {
     Serial.println("Device did not acknowledge! Freezing.");
-    while(1);
+    while (1)
+      ;
   }
   Serial.println("Motor acknowledged.");
 
+  printStatus();
+
   //enable interrupt trigger when limit switch is pressed
-  motor.enableLimSwitchPressedInterrupt();
+  motor.clearIsLimited(); //Clear isLimited bit. This will clear associated int.
+  motor.enableIsLimitedInterrupt();
 
-  Serial.println("Please press limit switch");
-  //assume that someone pressed the limit switch at this point
+  printStatus();
 
-  //let 2 seconds pass by
-  delay(2000);
+  Serial.println("Running motor until limit switch is pressed or 8 seconds goes by");
 
-  //clear the limit switch press flag
-  Serial.println("Hello, I'm clearing the interrupt flag");
-  motor.clearLimSwitchPressInterrupt();
+  motor.move(1000); //Will run with default maxSpeed/accel values.
+
+  long startTime = millis();
+  while (1)
+  {
+    printStatus();
+    if (digitalRead(QS_INT) == LOW)
+    {
+      Serial.print("Limit switch pressed after ");
+      Serial.print(millis() - startTime);
+      Serial.println("ms");
+      break;
+    }
+
+    delay(10);
+
+    if (millis() - startTime > 8000) //Timeout after 8s
+    {
+      Serial.println("Interrupt did not trigger. Do you have the correct interrupt pin wired?");
+      break;
+    }
+  }
+
+  printStatus();
+
+  //motor.stop(); //Stop all movement including any move or moveTo commands.
+
+  motor.clearIsLimited(); //Clear isLimited bit. This will clear associated int.
+  delay(100);
+  printStatus();
+  if (digitalRead(QS_INT) == HIGH)
+    Serial.println("INT pin is high. No interrupts.");
+  else
+    Serial.println("INT pin is still low. Interrupt failed to clear.");
 }
 
-void loop(){
-  
+void loop()
+{
+}
+
+void printStatus()
+{
+  Serial.print("Qwiic Step Status: ");
+  if (motor.isRunning())
+    Serial.print(" (isRunning)");
+  if (motor.isAccelerating())
+    Serial.print(" (isAccelerating)");
+  if (motor.isDecelerating())
+    Serial.print(" (isDecelerating)");
+  if (motor.isReached())
+    Serial.print(" (isReached)");
+  if (motor.isLimited())
+    Serial.print(" (isLimited)");
+  if (motor.isEStopped())
+    Serial.print(" (isEStopped)");
+  Serial.println();
 }

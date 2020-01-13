@@ -39,7 +39,7 @@ typedef union {
         bool isDecelerating : 1; //Gets set to 1 when motor is decelerating, 0 otherwise.
         bool isReached : 1;
         bool isLimited : 1;
-        bool eStopped : 1;
+        bool isEStopped : 1;
         bool : 2;
     };
     uint8_t byteWrapped;
