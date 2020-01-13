@@ -26,17 +26,18 @@ public:
     uint8_t getI2Caddress();                                                 //Returns the I2C address of the device
 
     //Motor control
-    bool QSetMaxSpeed(float speed);            //stepper.setMaxSpeed()
-    bool QSetSpeed(float speed);               //stepper.setSpeed()
-    bool QSetAcceleration(float acceleration); //stepper.setAcceleration()
-    bool QMoveTo(long absolute);               //stepper.moveTo() -- should have a stepper.move()
-    bool QMove(long relative);
-    bool QSetStepMode(uint8_t mode);
-    float QGetMaxSpeed();
-    float QGetSpeed();
-    float QGetAcceleration();
-    long QGetMoveTo();
-    uint8_t QGetStepMode();
+    bool stop();
+    bool setMaxSpeed(float speed);
+    bool setSpeed(float speed);
+    bool setAcceleration(float acceleration);
+    bool moveTo(long absolute);
+    bool move(long relative);
+    bool setStepMode(uint8_t mode);
+    float getMaxSpeed();
+    float getSpeed();
+    float getAcceleration();
+    long getMoveTo();
+    uint8_t getStepMode();
 
     //Microstepping
     bool fullStepMode();
