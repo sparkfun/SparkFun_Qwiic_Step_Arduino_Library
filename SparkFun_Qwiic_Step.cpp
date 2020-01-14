@@ -78,6 +78,7 @@ uint8_t QwiicStep::getI2Caddress()
 /*-------------------------- Motor Control ------------------------------*/
 
 //Writes the move and moveTo registers to 0
+//This causes the motor to spin down using the accel and maxSpeed parameters
 bool QwiicStep::stop()
 {
     bool status = true;
@@ -221,6 +222,16 @@ bool QwiicStep::clearInterrupts()
     status.isReached = 0;
     return (write(QS_STATUS, status.byteWrapped));
 }
+
+bool QwiicStep::disableInterrupts()
+{
+    interruptConfigBitField intConfig;
+    read(QS_INTERRUPT_CONFIG, (uint8_t *)&intConfig.byteWrapped, sizeof(intConfig.byteWrapped));
+    intConfig.isReachedInterruptEnable = 0;
+    intConfig.isLimitedInterruptEnable = 0;
+    return (write(QS_INTERRUPT_CONFIG, intConfig.byteWrapped));
+}
+
 bool QwiicStep::enableIsReachedInterrupt()
 {
     interruptConfigBitField intConfig;

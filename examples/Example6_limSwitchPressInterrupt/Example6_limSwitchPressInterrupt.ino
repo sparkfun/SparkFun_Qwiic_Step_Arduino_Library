@@ -47,15 +47,17 @@ void setup()
   printStatus();
 
   //enable interrupt trigger when limit switch is pressed
-  motor.clearIsLimited(); //Clear isLimited bit. This will clear associated int.
+  motor.disableInterrupts();
+  motor.clearInterrupts();
+  //motor.clearIsLimited(); //Clear isLimited bit. This will clear associated int.
   motor.enableIsLimitedInterrupt();
 
   printStatus();
 
   Serial.println("Running motor until limit switch is pressed or 8 seconds goes by");
 
-  motor.setAcceleration(5);
-  motor.move(1000); //Will run with default maxSpeed/accel values.
+  motor.setAcceleration(250);
+  motor.move(10000); //Will run with default maxSpeed/accel values.
 
   long startTime = millis();
   while (1)
@@ -87,11 +89,9 @@ void setup()
 
   printStatus();
 
-  //motor.stop(); //Stop all movement including any move or moveTo commands.
+  motor.stop();            //Stop all movement including any move or moveTo commands.
+  motor.clearInterrupts(); //Clears both isReached and isLimited bits
 
-  motor.clearIsLimited(); //Clear isLimited bit. This will clear associated int.
-  delay(100);
-  printStatus();
   if (digitalRead(QS_INT) == HIGH)
     Serial.println("INT pin is high. No interrupts.");
   else

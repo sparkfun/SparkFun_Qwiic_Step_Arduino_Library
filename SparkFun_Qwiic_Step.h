@@ -51,6 +51,7 @@ public:
 
     //Interrupt Handling
     bool clearInterrupts();
+    bool disableInterrupts();
     bool enableIsLimitedInterrupt();
     bool disableIsLimitedInterrupt();
     bool clearIsLimited();
