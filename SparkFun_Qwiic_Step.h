@@ -30,16 +30,19 @@ public:
     bool setMaxSpeed(float speed);
     bool setSpeed(float speed);
     bool setAcceleration(float acceleration);
-    bool moveTo(long absolute);
-    bool move(long relative);
+    bool moveTo(signed long absolute);
+    bool move(signed long relative);
     bool setStepMode(uint8_t mode);
+    bool setCurrentPosition(signed long pos);
 
     byte getStatus();
     float getMaxSpeed();
     float getSpeed();
     float getAcceleration();
-    long getMove();
-    long getMoveTo();
+    signed long getMove();
+    signed long getMoveTo();
+    signed long getCurrentPosition();
+    signed long getDistanceToGo();
     uint8_t getStepMode();
 
     //Microstepping
@@ -78,6 +81,13 @@ public:
     bool modeStop();
     bool disableOutputs();
     bool enableOutputs();
+
+    //Hold and run current
+    bool setHoldCurrent(uint16_t current);
+    bool setRunCurrent(uint16_t current);
+
+    uint16_t getHoldCurrent();
+    uint16_t getRunCurrent();
 
     //Internal I2C Abstraction
     bool read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize);

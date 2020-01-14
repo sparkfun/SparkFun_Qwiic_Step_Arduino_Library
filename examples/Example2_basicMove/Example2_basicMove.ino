@@ -34,8 +34,7 @@ void setup()
   if (motor.begin() == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
-    while (1)
-      ;
+    while (1);
   }
   Serial.println("Motor acknowledged.");
 

@@ -82,7 +82,7 @@ uint8_t QwiicStep::getI2Caddress()
 bool QwiicStep::stop()
 {
     bool status = true;
-    long stopValue = 0; //Force a four byte write to register
+    signed long stopValue = 0; //Force a four byte write to register
     status &= write(QS_MOVE, (uint8_t *)&stopValue, (uint8_t)sizeof(stopValue));
     status &= write(QS_MOVE_TO, (uint8_t *)&stopValue, (uint8_t)sizeof(stopValue));
     return (status);
@@ -103,27 +103,39 @@ bool QwiicStep::setAcceleration(float acceleration)
     return (write(QS_ACCELERATION, (uint8_t *)&acceleration, (uint8_t)sizeof(acceleration)));
 }
 
-bool QwiicStep::move(long relative)
+bool QwiicStep::move(signed long relative)
 {
     return (write(QS_MOVE, (uint8_t *)&relative, (uint8_t)sizeof(relative)));
 }
 
 //Returns the value currently in the Move register
-long QwiicStep::getMove()
+signed long QwiicStep::getMove()
 {
-    long moveValue;
+    signed long moveValue;
     read(QS_MOVE, (uint8_t *)&moveValue, (uint8_t)sizeof(moveValue));
     return (moveValue);
 }
 
-bool QwiicStep::moveTo(long absolute)
+bool QwiicStep::moveTo(signed long absolute)
 {
     return (write(QS_MOVE_TO, (uint8_t *)&absolute, (uint8_t)sizeof(absolute)));
+}
+
+signed long QwiicStep::getMoveTo()
+{
+    signed long moveToValue;
+    read(QS_MOVE_TO, (uint8_t *)&moveToValue, (uint8_t)sizeof(moveToValue));
+    return (moveToValue);
 }
 
 bool QwiicStep::setStepMode(uint8_t mode)
 {
     return (write(QS_DEVICE_CONFIG, mode));
+}
+
+bool QwiicStep::setCurrentPosition(signed long pos)
+{
+    return (write(QS_CURRENT_POSITION, (uint8_t *)&pos, (uint8_t)sizeof(pos)));
 }
 
 float QwiicStep::getMaxSpeed()
@@ -153,6 +165,20 @@ uint8_t QwiicStep::getStatus()
     uint8_t stat;
     read(QS_STATUS, (uint8_t *)&stat, (uint8_t)sizeof(stat));
     return stat;
+}
+
+signed long QwiicStep::getCurrentPosition()
+{
+    signed long pos;
+    read(QS_CURRENT_POSITION, (uint8_t *)&pos, (uint8_t)sizeof(pos));
+    return pos;
+}
+
+signed long QwiicStep::getDistanceToGo()
+{
+    signed long dist;
+    read(QS_DIST_TO_GO, (uint8_t *)&dist, (uint8_t)sizeof(dist));
+    return dist;
 }
 
 //Returns the bits set that control the micro step amount
@@ -436,6 +462,32 @@ bool QwiicStep::enableOutputs()
     read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
     motorControl.disableMotor = 0;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
+}
+
+/*------------------------- Configure Current ---------------------------*/
+
+bool QwiicStep::setHoldCurrent(uint16_t current)
+{
+    return (write(QS_HOLD_CURRENT, (uint8_t *)&current, (uint8_t)sizeof(current)));
+}
+
+bool QwiicStep::setRunCurrent(uint16_t current)
+{
+    return (write(QS_RUN_CURRENT, (uint8_t *)&current, (uint8_t)sizeof(current)));
+}
+
+uint16_t QwiicStep::getHoldCurrent()
+{
+    uint16_t holdCurrent;
+    read(QS_HOLD_CURRENT, (uint8_t *)&holdCurrent, (uint8_t)sizeof(holdCurrent));
+    return holdCurrent;
+}
+
+uint16_t QwiicStep::getRunCurrent()
+{
+    uint16_t runCurrent;
+    read(QS_RUN_CURRENT, (uint8_t *)&runCurrent, (uint8_t)sizeof(runCurrent));
+    return runCurrent;
 }
 
 /*---------------------- Internal I2C Abstraction -----------------------*/
