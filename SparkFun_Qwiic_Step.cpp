@@ -375,6 +375,69 @@ bool QwiicStep::clearEStop()
     return (write(QS_STATUS, status.byteWrapped));
 }
 
+//DEBUG: still need to test all of these
+/*---------------------------- Run options ------------------------------*/
+
+bool QwiicStep::modeRun()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.run = 1;
+    deviceControl.runSpeed = 0;
+    deviceControl.runSpeedToPosition = 0;
+    deviceControl.stop = 0;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+}
+
+bool QwiicStep::modeRunSpeed()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.run = 0;
+    deviceControl.runSpeed = 1;
+    deviceControl.runSpeedToPosition = 0;
+    deviceControl.stop = 0;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+}
+
+bool QwiicStep::modeRunSpeedToPosition()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.run = 0;
+    deviceControl.runSpeed = 0;
+    deviceControl.runSpeedToPosition = 1;
+    deviceControl.stop = 0;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+}
+
+bool QwiicStep::modeStop()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.run = 0;
+    deviceControl.runSpeed = 0;
+    deviceControl.runSpeedToPosition = 0;
+    deviceControl.stop = 1;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+}
+
+bool QwiicStep::disableOutputs()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.disableMotor = 1;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+}
+
+bool QwiicStep::enableOutputs()
+{
+    deviceControlBitField deviceControl;
+    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
+    deviceControl.disableMotor = 0;
+    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+}
+
 /*---------------------- Internal I2C Abstraction -----------------------*/
 
 bool QwiicStep::read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)

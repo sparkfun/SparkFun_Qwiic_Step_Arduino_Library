@@ -71,6 +71,14 @@ public:
     bool isLimited();
     bool isEStopped();
 
+    //Device control
+    bool modeRun();
+    bool modeRunSpeed();
+    bool modeRunSpeedToPosition();
+    bool modeStop();
+    bool disableOutputs();
+    bool enableOutputs();
+
     //Internal I2C Abstraction
     bool read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize);
     bool read(Qwiic_Step_Register reg, uint8_t data);
