@@ -39,7 +39,7 @@ void setup()
 
   //Set the motor hold current to desired value
   //Please pass in a value in mA from 0 - 2000
-  motor.setHoldCurrent(2000);
+  motor.setHoldCurrent(4000);
 
   //Get it to make sure
   Serial.print("The present hold current is: ");

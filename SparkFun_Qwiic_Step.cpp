@@ -468,16 +468,41 @@ bool QwiicStep::enableOutputs()
 
 bool QwiicStep::setHoldCurrent(uint16_t current)
 {
-    return (write(QS_HOLD_CURRENT, (uint8_t *)&current, (uint8_t)sizeof(current)));
+    uint16_t holdCurrent;
+
+    //If user enters illegal value, set to default
+    if (current > 2000)
+    {
+        holdCurrent = 2000;
+    }
+    else if (current < 0)
+    {
+        holdCurrent = 0;
+    }
+
+    return (write(QS_HOLD_CURRENT, (uint8_t *)&holdCurrent, (uint8_t)sizeof(holdCurrent)));
 }
 
 bool QwiicStep::setRunCurrent(uint16_t current)
 {
-    return (write(QS_RUN_CURRENT, (uint8_t *)&current, (uint8_t)sizeof(current)));
+    uint16_t runCurrent;
+
+    //If user enters illegal value, set to defualt
+    if (current > 2000)
+    {
+        runCurrent = 2000;
+    }
+    else if (current < 0)
+    {
+        runCurrent = 0;
+    }
+
+    return (write(QS_RUN_CURRENT, (uint8_t *)&runCurrent, (uint8_t)sizeof(runCurrent)));
 }
 
 uint16_t QwiicStep::getHoldCurrent()
 {
+    //DEBUG: this function is destined to change
     uint16_t holdCurrent;
     read(QS_HOLD_CURRENT, (uint8_t *)&holdCurrent, (uint8_t)sizeof(holdCurrent));
     return holdCurrent;
@@ -485,6 +510,7 @@ uint16_t QwiicStep::getHoldCurrent()
 
 uint16_t QwiicStep::getRunCurrent()
 {
+    //DEBUG: this function is destined to change
     uint16_t runCurrent;
     read(QS_RUN_CURRENT, (uint8_t *)&runCurrent, (uint8_t)sizeof(runCurrent));
     return runCurrent;
