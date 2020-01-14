@@ -39,7 +39,7 @@ void setup()
   //Speeds of more than 1000 are unreliable.
   //Decimal values are allowed. 0.1 = 1 step every ten seconds.
   motor.setSpeed(-350);
-  motor.modeRunSpeed(); //Tell the motor to run at that speed... forever
+  motor.modeRunContinuous(); //Tell the motor to run at that speed... forever
 }
 
 void loop()

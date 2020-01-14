@@ -6,15 +6,16 @@ bool QwiicStep::begin(uint8_t address, TwoWire &wirePort)
     _deviceAddress = address; //grab the address that the motor is on
     _i2cPort = &wirePort;     //grab the port that the user wants to use
 
-    //Setup motor with default step size, speed, maxSpeed and acceleration
+    //Setup motor with default step size, maxSpeed and acceleration
     //So that user can simply .move() from their sketch
-    fullStepMode();
-    setMaxSpeed(800); //4 full rotations per second on a 200 step motor
-    //setSpeed(300); //Only set if we are in runSpeed mode, otherwise library causes motor to twitch slowly.
-    setAcceleration(200);
+    modeRunToPosition();
 
-    //return true if the device is connected and the device ID is what we expect
-    return (isConnected());
+    fullStepMode();
+
+    setMaxSpeed(800); //4 full rotations per second on a 200 step motor
+    setSpeed(200);
+
+    return (isConnected()); //return true if the device is connected and the device ID is what we expect
 }
 
 //Returns true if device answers with expected WHOAMI ID
@@ -378,35 +379,35 @@ bool QwiicStep::clearEStop()
 //DEBUG: still need to test all of these
 /*---------------------------- Run options ------------------------------*/
 
-bool QwiicStep::modeRun()
+bool QwiicStep::modeRunWithAcceleration()
 {
     motorControlBitField motorControl;
     read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
-    motorControl.run = 1;
-    motorControl.runSpeed = 0;
-    motorControl.runSpeedToPosition = 0;
+    motorControl.runToPosition = 0;
+    motorControl.runToPositionWithAccel = 1;
+    motorControl.runContinous = 0;
     motorControl.hardStop = 0;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
-bool QwiicStep::modeRunSpeed()
+bool QwiicStep::modeRunContinuous()
 {
     motorControlBitField motorControl;
     read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
-    motorControl.run = 0;
-    motorControl.runSpeed = 1;
-    motorControl.runSpeedToPosition = 0;
+    motorControl.runToPosition = 0;
+    motorControl.runToPositionWithAccel = 0;
+    motorControl.runContinous = 1;
     motorControl.hardStop = 0;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
-bool QwiicStep::modeRunSpeedToPosition()
+bool QwiicStep::modeRunToPosition()
 {
     motorControlBitField motorControl;
     read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
-    motorControl.run = 0;
-    motorControl.runSpeed = 0;
-    motorControl.runSpeedToPosition = 1;
+    motorControl.runToPosition = 1;
+    motorControl.runToPositionWithAccel = 0;
+    motorControl.runContinous = 0;
     motorControl.hardStop = 0;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
@@ -415,9 +416,9 @@ bool QwiicStep::hardStop()
 {
     motorControlBitField motorControl;
     read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
-    motorControl.run = 0;
-    motorControl.runSpeed = 0;
-    motorControl.runSpeedToPosition = 0;
+    motorControl.runToPosition = 0;
+    motorControl.runToPositionWithAccel = 0;
+    motorControl.runContinous = 0;
     motorControl.hardStop = 1;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }

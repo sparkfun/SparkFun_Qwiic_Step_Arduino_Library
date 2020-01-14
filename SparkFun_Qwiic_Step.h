@@ -73,9 +73,9 @@ public:
     bool isEStopped();
 
     //Device control
-    bool modeRun();
-    bool modeRunSpeed();
-    bool modeRunSpeedToPosition();
+    bool modeRunWithAcceleration();
+    bool modeRunContinuous();
+    bool modeRunToPosition();
     bool disableOutputs();
     bool enableOutputs();
 

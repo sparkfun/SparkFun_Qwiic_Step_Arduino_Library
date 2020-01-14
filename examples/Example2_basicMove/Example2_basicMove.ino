@@ -40,7 +40,7 @@ void setup()
   Serial.println("Motor acknowledged.");
 
   //Pick whichever micro-stepping setting you would like
-  motor.fullStepMode();
+  //motor.fullStepMode();
   //  motor.halfStepMode();
   //  motor.quarterStepMode();
   //  motor.eighthStepMode();
@@ -48,8 +48,7 @@ void setup()
 
   //Set/write all accelstepper parameters
   //We must set a max speed and accel before a move command for 'normal looking' operation
-  motor.setMaxSpeed(500); //There is a limit here. 1000 at full step fails to rotate one full. If maxSpeed is greater than the ability for the mega to service run() then the stepper drops steps.
-  motor.setAcceleration(100);
+  //motor.setMaxSpeed(500); //There is a limit here. 1000 at full step fails to rotate one full. If maxSpeed is greater than the ability for the mega to service run() then the stepper drops steps.
 
   motor.move(200); //Turn one exact rotation of a 200 step stepper motor
   //motor.move(16 * 200); //Turn one exact rotation of a 200 step stepper motor with 1/16th step mode
