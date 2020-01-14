@@ -354,7 +354,7 @@ bool QwiicStep::enableDisableMotorWhenPosReached()
 {
     deviceConfigBitField deviceConfigure;
     read(QS_DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
-    deviceConfigure.disableMotorPositionReached = 1;
+    deviceConfigure.disableMotorOnPositionReached = 1;
     return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
@@ -362,7 +362,7 @@ bool QwiicStep::disableDisableMotorWhenPosReached()
 {
     deviceConfigBitField deviceConfigure;
     read(QS_DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
-    deviceConfigure.disableMotorPositionReached = 0;
+    deviceConfigure.disableMotorOnPositionReached = 0;
     return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
@@ -380,62 +380,62 @@ bool QwiicStep::clearEStop()
 
 bool QwiicStep::modeRun()
 {
-    deviceControlBitField deviceControl;
-    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
-    deviceControl.run = 1;
-    deviceControl.runSpeed = 0;
-    deviceControl.runSpeedToPosition = 0;
-    deviceControl.stop = 0;
-    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+    motorControlBitField motorControl;
+    read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
+    motorControl.run = 1;
+    motorControl.runSpeed = 0;
+    motorControl.runSpeedToPosition = 0;
+    motorControl.stop = 0;
+    return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
 bool QwiicStep::modeRunSpeed()
 {
-    deviceControlBitField deviceControl;
-    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
-    deviceControl.run = 0;
-    deviceControl.runSpeed = 1;
-    deviceControl.runSpeedToPosition = 0;
-    deviceControl.stop = 0;
-    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+    motorControlBitField motorControl;
+    read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
+    motorControl.run = 0;
+    motorControl.runSpeed = 1;
+    motorControl.runSpeedToPosition = 0;
+    motorControl.stop = 0;
+    return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
 bool QwiicStep::modeRunSpeedToPosition()
 {
-    deviceControlBitField deviceControl;
-    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
-    deviceControl.run = 0;
-    deviceControl.runSpeed = 0;
-    deviceControl.runSpeedToPosition = 1;
-    deviceControl.stop = 0;
-    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+    motorControlBitField motorControl;
+    read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
+    motorControl.run = 0;
+    motorControl.runSpeed = 0;
+    motorControl.runSpeedToPosition = 1;
+    motorControl.stop = 0;
+    return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
 bool QwiicStep::modeStop()
 {
-    deviceControlBitField deviceControl;
-    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
-    deviceControl.run = 0;
-    deviceControl.runSpeed = 0;
-    deviceControl.runSpeedToPosition = 0;
-    deviceControl.stop = 1;
-    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+    motorControlBitField motorControl;
+    read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
+    motorControl.run = 0;
+    motorControl.runSpeed = 0;
+    motorControl.runSpeedToPosition = 0;
+    motorControl.stop = 1;
+    return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
 bool QwiicStep::disableOutputs()
 {
-    deviceControlBitField deviceControl;
-    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
-    deviceControl.disableMotor = 1;
-    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+    motorControlBitField motorControl;
+    read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
+    motorControl.disableMotor = 1;
+    return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
 bool QwiicStep::enableOutputs()
 {
-    deviceControlBitField deviceControl;
-    read(DEVICE_CONTROL, (uint8_t *)&deviceControl.byteWrapped, sizeof(deviceControl.byteWrapped));
-    deviceControl.disableMotor = 0;
-    return (write(DEVICE_CONTROL, deviceControl.byteWrapped));
+    motorControlBitField motorControl;
+    read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
+    motorControl.disableMotor = 0;
+    return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
 /*---------------------- Internal I2C Abstraction -----------------------*/
