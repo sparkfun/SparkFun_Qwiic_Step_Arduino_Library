@@ -1,11 +1,15 @@
 /******************************************************************************
-  Tests the runSpeed option from accelStepper library.
+  Given a position, run at speed (no accel/decel) to that position then stop.
+  
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
+  
   SparkFun labored with love to create this code. Feel like supporting open source hardware?
   Buy a board from SparkFun! https://www.sparkfun.com/products/15951
+  
   This code is Lemonadeware; if you see me (or any other SparkFun employee) at the
   local, and you've found our code helpful, please buy us a round!
+  
   Hardware Connections:
   Attach Red Board to computer using micro-B USB cable.
   Connect Qwiic Step to Red Board using Qwiic connector cable.
@@ -31,15 +35,17 @@ void setup()
   }
   Serial.println("Motor acknowledged.");
 
-  //Set the motor speed
+  //Run without accelerations to a position
+  motor.setMaxSpeed(1000);
+
+  motor.move(200); //This move must come before setSpeed.
+
   //Speeds are in steps per second.
   //Positive is clockwise, negative is counter clockwise.
   //Speeds of more than 1000 are unreliable.
-  motor.setMaxSpeed(1000);
-  motor.setSpeed(-350);
-
-  //Tell the motor to run at that speed... forever
-  motor.modeRunSpeed();
+  //Decimal values are allowed. 0.1 = 1 step every ten seconds.
+  motor.setSpeed(350);
+  motor.modeRunSpeedToPosition(); //Tell the motor to run at that speed until we have arrived at position
 }
 
 void loop()

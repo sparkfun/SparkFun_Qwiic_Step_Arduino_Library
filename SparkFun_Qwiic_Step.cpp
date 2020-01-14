@@ -385,7 +385,7 @@ bool QwiicStep::modeRun()
     motorControl.run = 1;
     motorControl.runSpeed = 0;
     motorControl.runSpeedToPosition = 0;
-    motorControl.stop = 0;
+    motorControl.hardStop = 0;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
@@ -396,7 +396,7 @@ bool QwiicStep::modeRunSpeed()
     motorControl.run = 0;
     motorControl.runSpeed = 1;
     motorControl.runSpeedToPosition = 0;
-    motorControl.stop = 0;
+    motorControl.hardStop = 0;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
@@ -407,18 +407,18 @@ bool QwiicStep::modeRunSpeedToPosition()
     motorControl.run = 0;
     motorControl.runSpeed = 0;
     motorControl.runSpeedToPosition = 1;
-    motorControl.stop = 0;
+    motorControl.hardStop = 0;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
-bool QwiicStep::modeStop()
+bool QwiicStep::hardStop()
 {
     motorControlBitField motorControl;
     read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
     motorControl.run = 0;
     motorControl.runSpeed = 0;
     motorControl.runSpeedToPosition = 0;
-    motorControl.stop = 1;
+    motorControl.hardStop = 1;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 

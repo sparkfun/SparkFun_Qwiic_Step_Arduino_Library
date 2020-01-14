@@ -27,6 +27,7 @@ public:
 
     //Motor control
     bool stop();
+    bool hardStop();
     bool setMaxSpeed(float speed);
     bool setSpeed(float speed);
     bool setAcceleration(float acceleration);
@@ -75,7 +76,6 @@ public:
     bool modeRun();
     bool modeRunSpeed();
     bool modeRunSpeedToPosition();
-    bool modeStop();
     bool disableOutputs();
     bool enableOutputs();
 
