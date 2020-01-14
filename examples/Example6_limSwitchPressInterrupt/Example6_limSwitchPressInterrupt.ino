@@ -57,7 +57,7 @@ void setup()
   Serial.println("Running motor until limit switch is pressed or 8 seconds goes by");
 
   motor.setAcceleration(250);
-  motor.move(10000); //Will run with default maxSpeed/accel values.
+  motor.move(6000); //Will run with default maxSpeed/accel values.
 
   long startTime = millis();
   while (1)
@@ -89,13 +89,23 @@ void setup()
 
   printStatus();
 
-  motor.stop();            //Stop all movement including any move or moveTo commands.
+  motor.stop(); //Move to 0. This will cause motor to spin to a stop. isReached bit will be set and interrupt will fire if enabled.
+
+  //Wait for motor to spin to a stop
+  while (motor.isRunning() == true)
+  {
+    delay(50);
+  }
+
   motor.clearInterrupts(); //Clears both isReached and isLimited bits
+  delay(50);               //Qwiic Step firmware can take a few ms to get to releasing the INT pin
 
   if (digitalRead(QS_INT) == HIGH)
     Serial.println("INT pin is high. No interrupts.");
   else
     Serial.println("INT pin is still low. Interrupt failed to clear.");
+
+  printStatus();
 }
 
 void loop()
@@ -107,6 +117,8 @@ void printStatus()
   Serial.print("Qwiic Step Status: ");
   if (motor.isRunning())
     Serial.print(" (isRunning)");
+  else
+    Serial.print(" (Stopped)");
   if (motor.isAccelerating())
     Serial.print(" (isAccelerating)");
   if (motor.isDecelerating())
