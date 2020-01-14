@@ -52,8 +52,39 @@ void setup()
 
   motor.move(200); //Turn one exact rotation of a 200 step stepper motor
   //motor.move(16 * 200); //Turn one exact rotation of a 200 step stepper motor with 1/16th step mode
+
+  delay(50); //Wait for motor to start running before we check its status
+
+  while (motor.isRunning() == true)
+  {
+    printStatus();
+    delay(100);
+  }
+  Serial.println("Motor got to position, running other way");
+
+  motor.move(-300); //Turn more
 }
 
 void loop()
 {
+}
+
+void printStatus()
+{
+  Serial.print("Qwiic Step Status: ");
+  if (motor.isRunning())
+    Serial.print(" (isRunning)");
+  else
+    Serial.print(" (Stopped)");
+  if (motor.isAccelerating())
+    Serial.print(" (isAccelerating)");
+  if (motor.isDecelerating())
+    Serial.print(" (isDecelerating)");
+  if (motor.isReached())
+    Serial.print(" (isReached)");
+  if (motor.isLimited())
+    Serial.print(" (isLimited)");
+  if (motor.isEStopped())
+    Serial.print(" (isEStopped)");
+  Serial.println();
 }

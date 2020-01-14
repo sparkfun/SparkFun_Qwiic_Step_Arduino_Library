@@ -1,5 +1,5 @@
 /******************************************************************************
-  Given a position, run at speed (no accel/decel) to that position then stop.
+  Given a position, accelerate, then decelerate stopping at the given spot.
   
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
@@ -35,17 +35,23 @@ void setup()
   }
   Serial.println("Motor acknowledged.");
 
-  //Run without accelerations to a position
-  motor.setMaxSpeed(1000);
+  motor.modeRunWithAcceleration(); //Tell the motor to run with accel/decel until we have arrived at position
 
-  motor.move(200); //This move must come before setSpeed.
+  //Run with accelerations to a position
+  motor.setMaxSpeed(600); //Speeds over 600 cause stepper to lose steps
+  motor.setAcceleration(400);
 
-  //Speeds are in steps per second.
-  //Positive is clockwise, negative is counter clockwise.
-  //Speeds of more than 1000 are unreliable.
-  //Decimal values are allowed. 0.1 = 1 step every ten seconds.
-  motor.setSpeed(350);
-  motor.modeRunToPosition(); //Tell the motor to run at that speed until we have arrived at position
+  motor.move(2000);
+
+  delay(50); //Wait for motor to start running
+  while (motor.isRunning())
+  {
+    delay(100);
+  }
+
+  Serial.println("Motor has reached first position");
+
+  motor.move(-2000); //Turn the other way
 }
 
 void loop()
