@@ -164,7 +164,7 @@ uint8_t QwiicStep::getStatus()
     return stat;
 }
 
-bool QwiicStep::setHoldCurrent(int16_t newCurrent)
+bool QwiicStep::setHoldCurrent(uint16_t newCurrent)
 {
     return (write(QS_HOLD_CURRENT, (uint8_t *)&newCurrent, (uint8_t)sizeof(newCurrent)));
 }
@@ -176,7 +176,7 @@ uint16_t QwiicStep::getHoldCurrent()
     return (holdCurrent);
 }
 
-bool QwiicStep::setRunCurrent(int16_t newCurrent)
+bool QwiicStep::setRunCurrent(uint16_t newCurrent)
 {
     return (write(QS_RUN_CURRENT, (uint8_t *)&newCurrent, (uint8_t)sizeof(newCurrent)));
 }
