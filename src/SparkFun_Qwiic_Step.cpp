@@ -110,7 +110,6 @@ bool QwiicStep::move(long relative)
     return (write(QS_MOVE, (uint8_t *)&relative, (uint8_t)sizeof(relative)));
 }
 
-//Returns the value currently in the Move register
 long QwiicStep::getMove()
 {
     long moveValue;
@@ -121,6 +120,20 @@ long QwiicStep::getMove()
 bool QwiicStep::moveTo(long absolute)
 {
     return (write(QS_MOVE_TO, (uint8_t *)&absolute, (uint8_t)sizeof(absolute)));
+}
+
+long QwiicStep::getMoveTo()
+{
+    long moveToValue;
+    read(QS_MOVE_TO, (uint8_t *)&moveToValue, (uint8_t)sizeof(moveToValue));
+    return (moveToValue);
+}
+
+long QwiicStep::toGo()
+{
+    long distanceToGo;
+    read(QS_DIST_TO_GO, (uint8_t *)&distanceToGo, (uint8_t)sizeof(distanceToGo));
+    return (distanceToGo);
 }
 
 float QwiicStep::getMaxSpeed()
@@ -144,12 +157,35 @@ float QwiicStep::getAcceleration()
     return acceleration;
 }
 
-//Returns the current status register
 uint8_t QwiicStep::getStatus()
 {
     uint8_t stat;
     read(QS_STATUS, (uint8_t *)&stat, (uint8_t)sizeof(stat));
     return stat;
+}
+
+bool QwiicStep::setHoldCurrent(int16_t newCurrent)
+{
+    return (write(QS_HOLD_CURRENT, (uint8_t *)&newCurrent, (uint8_t)sizeof(newCurrent)));
+}
+
+uint16_t QwiicStep::getHoldCurrent()
+{
+    uint16_t holdCurrent;
+    read(QS_HOLD_CURRENT, (uint8_t *)&holdCurrent, (uint8_t)sizeof(holdCurrent));
+    return (holdCurrent);
+}
+
+bool QwiicStep::setRunCurrent(int16_t newCurrent)
+{
+    return (write(QS_RUN_CURRENT, (uint8_t *)&newCurrent, (uint8_t)sizeof(newCurrent)));
+}
+
+uint16_t QwiicStep::getRunCurrent()
+{
+    uint16_t runCurrent;
+    read(QS_RUN_CURRENT, (uint8_t *)&runCurrent, (uint8_t)sizeof(runCurrent));
+    return (runCurrent);
 }
 
 /*------------------------- Motor Stepping ------------------------------*/

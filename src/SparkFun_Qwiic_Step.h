@@ -41,6 +41,7 @@ public:
     long getMoveTo();
     bool move(long relative);
     long getMove();
+    long toGo();
     bool enable();  //Energize the coils
     bool disable(); //Turn off coils
 
@@ -80,6 +81,11 @@ public:
     //Special record to NVM functions
     bool recordMoveToNVM();
     bool recordSpeedToNVM();
+
+    bool setHoldCurrent(uint16_t maxCurrent);
+    uint16_t getHoldCurrent();
+    bool setRunCurrent(uint16_t maxCurrent);
+    uint16_t getRunCurrent();
 
     //Internal I2C Abstraction
     bool read(sfe_qs_register reg, uint8_t *buff, uint8_t buffSize);
