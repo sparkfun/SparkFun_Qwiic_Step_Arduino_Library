@@ -1,6 +1,14 @@
 /******************************************************************************
-  Move to a location, then once the position is reached, turn the opposite direction.
-  We use the isReached() status bit to see if the motor has reached our intended destination.
+  Move to an absolute position. This is different from a relative position.
+
+  Relative move: Go 400 steps. Go another -400 steps.
+  Absolute move: Go to location 400. Go to location 0.
+
+  The two methods have an equivalent outcome (the motor will move then return)
+  but they each have pros/cons and various applications.
+
+  Absolute move is used in conjunction with the setCurrentPosition() to adjust your zero
+  point as necessary.
 
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
@@ -39,39 +47,31 @@ void setup()
   }
   Serial.println("Motor acknowledged.");
 
-  motor.move(200); //Turn one exact rotation of a 200 step stepper motor
-  //motor.move(16 * 200); //Turn one exact rotation of a 200 step stepper motor with 1/16th step mode
+  motor.moveTo(100); //Turn 1/2 rotation of a 200 step stepper motor
+  while (motor.isRunning() == true)
+    delay(100);
 
-  while (motor.isReached() == false)
-  {
-    printStatus();
-    delay(10);
-  }
-  Serial.println("Motor arrived to position. Now run motor in opposite direction.");
+  Serial.println("Motor got to position. Let's move to back to our starting position.");
 
-  motor.move(-200); //Turn in opposite direction
+  motor.moveTo(0); //Will move back to original starting position
+  while (motor.isRunning() == true)
+    delay(100);
+
+  delay(500);
+  Serial.println("Now we move to 90 degrees or position 50.");
+
+  motor.moveTo(50);
+  while (motor.isRunning() == true)
+    delay(100);
+
+  Serial.println("Now let's call this 'home' and move -50 steps to return to our starting position.");
+
+  motor.setPosition(0); //Mark this position as '0'. Any value is accepted.
+  motor.moveTo(-50);    //Move to where we started
+  while (motor.isRunning() == true)
+    delay(100);
 }
 
 void loop()
 {
-}
-
-void printStatus()
-{
-  Serial.print("Qwiic Step Status: ");
-  if (motor.isRunning())
-    Serial.print(" (isRunning)");
-  else
-    Serial.print(" (Stopped)");
-  if (motor.isAccelerating())
-    Serial.print(" (isAccelerating)");
-  if (motor.isDecelerating())
-    Serial.print(" (isDecelerating)");
-  if (motor.isReached())
-    Serial.print(" (isReached)");
-  if (motor.isLimited())
-    Serial.print(" (isLimited)");
-  if (motor.isEStopped())
-    Serial.print(" (isEStopped)");
-  Serial.println();
 }

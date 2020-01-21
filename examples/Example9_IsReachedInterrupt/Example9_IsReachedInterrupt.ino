@@ -1,5 +1,6 @@
 /******************************************************************************
-  Tests the setting and clearing of the positionReached interrupt.
+  Demonstrates the isReached interrupt. Qwiic Step will pull the Interrupt
+  pin low when motor has reached its destination.
 
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
@@ -11,9 +12,10 @@
   local, and you've found our code helpful, please buy us a round!
 
   Hardware Connections:
-  Attach Red Board to computer using micro-B USB cable.
+  Attach RedBoard to computer using micro-B USB cable.
   Connect Qwiic Step to Red Board using Qwiic connector cable.
-  Connect stepper motor to Qwiic Step easy to use using latch terminals.
+  Connect stepper motor to Qwiic Step using latch terminals.
+  Connect INT pin on Qwiic Step to pin 2 on RedBoard.
   Connect power supply (8-35V) to barrel jack or latch terminals.
   Open Serial Monitor at 115200 baud.
 
@@ -29,11 +31,11 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println("Qwiic step examples");
-  Wire.begin(); //Join I2C bus
+  Wire.begin();
 
   pinMode(QS_INT, INPUT_PULLUP);
 
-  //check if the motor will acknowledge I2C
+  //Check if Qwiic Step is correctly connected to I2C
   if (motor.begin() == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
@@ -42,21 +44,21 @@ void setup()
   }
   Serial.println("Motor acknowledged.");
 
-  motor.clearIsReached(); //Clear isReached bit. This will clear associated int.
-  motor.enableIsReachedInterrupt();
+  printStatus();
 
-  //move motor
-  motor.QSetMaxSpeed(800);
-  motor.QSetSpeed(300);
-  motor.QSetAcceleration(950);
-  motor.QMove(400);
+  //motor.setStepSize(STEPSIZE_QUARTER); //Turns a 200 step motor into 800 steps.
+
+  motor.enableIsReachedInterrupt(); //INT pin will go low when motor reaches destination
+  motor.clearInterrupts();          //Clears both isLimited and isReached bits. This clears associated ints.
+
+  motor.move(200); //Will run with default maxSpeed/accel values.
 
   long startTime = millis();
   while (1)
   {
     if (digitalRead(QS_INT) == LOW)
     {
-      Serial.print("Reached requested position in ");
+      Serial.print("We reached the requested position in ");
       Serial.print(millis() - startTime);
       Serial.println("ms");
       break;
@@ -72,6 +74,8 @@ void setup()
   }
 
   motor.clearIsReached(); //Clear isReached bit. This will clear associated int.
+  delay(10);              //Qwiic Step firmware can take a few ms to get to releasing the INT pin
+
   if (digitalRead(QS_INT) == HIGH)
     Serial.println("INT pin has returned high. Interrupt cleared.");
   else

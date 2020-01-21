@@ -1,6 +1,5 @@
 /******************************************************************************
-  Move a 200 step stepper motor exactly one rotation.
-  Shows how to change the microstep value as well as the speed and acceleration settings.
+  Given a position, accelerate, then decelerate stopping at the given spot.
 
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
@@ -12,10 +11,10 @@
   local, and you've found our code helpful, please buy us a round!
 
   Hardware Connections:
-  Attach Red Board to computer using micro-B USB cable.
-  Connect Qwiic Step to Red Board using Qwiic connector cable.
-  Connect stepper motor to Qwiic Step easy to use using latch terminals.
-  Connect power supply (8-35V) to barrel jack or latch terminals.
+  Attach RedBoard to computer using a USB cable.
+  Connect Qwiic Step to Red Board using Qwiic cable.
+  Connect stepper motor to Qwiic Step using latching terminals.
+  Connect power supply (8-35V) to barrel jack or using latching terminals.
   Open Serial Monitor at 115200 baud.
 
   Distributed as-is; no warranty is given.
@@ -30,7 +29,7 @@ void setup()
   Serial.println("Qwiic step examples");
   Wire.begin(); //Join I2C bus
 
-  //check if motor will acknowledge over I2C
+  //Check if Qwiic Step is correctly connected to I2C
   if (motor.begin() == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
@@ -39,30 +38,33 @@ void setup()
   }
   Serial.println("Motor acknowledged.");
 
-  //Pick whichever micro-stepping setting you would like
-  //motor.fullStepMode();
-  //  motor.halfStepMode();
-  //  motor.quarterStepMode();
-  //  motor.eighthStepMode();
-  //  motor.sixteenthStepMode();
+  motor.modeRunWithAcceleration(); //Tell the motor to run with accel/decel until we have arrived at position
 
-  //Set/write all accelstepper parameters
-  //We must set a max speed and accel before a move command for 'normal looking' operation
-  //motor.setMaxSpeed(500); //There is a limit here. 1000 at full step fails to rotate one full. If maxSpeed is greater than the ability for the mega to service run() then the stepper drops steps.
+  //Run with accelerations to a position
+  motor.setMaxSpeed(600); //Speeds over 600 cause stepper to lose steps
+  motor.setAcceleration(400);
 
-  motor.move(200); //Turn one exact rotation of a 200 step stepper motor
-  //motor.move(16 * 200); //Turn one exact rotation of a 200 step stepper motor with 1/16th step mode
+  motor.move(2000); //Move a total of 2000 steps or 10 rotations CW
 
-  delay(50); //Wait for motor to start running before we check its status
-
-  while (motor.isRunning() == true)
+  while (motor.isRunning())
   {
     printStatus();
-    delay(100);
+    delay(50);
   }
-  Serial.println("Motor got to position, running other way");
+  printStatus();
 
-  motor.move(-300); //Turn more
+  Serial.println("Motor has reached first position.");
+
+  motor.move(-2000); //Turn the other way
+
+  while (motor.isRunning())
+  {
+    printStatus();
+    delay(50);
+  }
+  printStatus();
+
+  Serial.println("Motor is done moving.");
 }
 
 void loop()

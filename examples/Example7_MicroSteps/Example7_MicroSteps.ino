@@ -1,6 +1,6 @@
 /******************************************************************************
-  Move to a location, then once the position is reached, turn the opposite direction.
-  We use the isReached() status bit to see if the motor has reached our intended destination.
+  Qwiic Step can divide each step into smaller microsteps. This increases precision
+  but also affects the other parameters.
 
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
@@ -15,7 +15,7 @@
   Attach RedBoard to computer using a USB cable.
   Connect Qwiic Step to Red Board using Qwiic cable.
   Connect stepper motor to Qwiic Step using latching terminals.
-  Connect power supply (8-35V) to barrel jack or using latching terminals.
+  Connect power supply (8-35V) to barrel jack or latching terminals.
   Open Serial Monitor at 115200 baud.
 
   Distributed as-is; no warranty is given.
@@ -39,17 +39,39 @@ void setup()
   }
   Serial.println("Motor acknowledged.");
 
-  motor.move(200); //Turn one exact rotation of a 200 step stepper motor
-  //motor.move(16 * 200); //Turn one exact rotation of a 200 step stepper motor with 1/16th step mode
+  motor.setModeRunToPosition();
 
-  while (motor.isReached() == false)
+  //Qwiic Step supports full, 1/2, 1/4, 1/8, and 1/16th microstepping
+  //motor.setStepSize(STEPSIZE_FULL);
+  //motor.setStepSize(STEPSIZE_HALF);
+  motor.setStepSize(STEPSIZE_QUARTER); //Turns a 200 step motor into 800 steps.
+  //motor.setStepSize(STEPSIZE_EIGHTH);
+  //motor.setStepSize(STEPSIZE_SIXTEENTH);
+
+  //The number of steps is related to the step size. If you have a 200 step motor, and your step
+  //size is half, it will take 400 steps to complete one turn.
+  //motor.move(1 * 200); //Turn one exact rotation of a 200 step stepper motor with full step mode
+  //motor.move(2 * 200); //Turn one exact rotation of a 200 step stepper motor with 1/2 step mode
+  motor.move(4 * 200); //Turn one exact rotation of a 200 step stepper motor with 1/4 step mode
+
+  //Speed is also related to the step size. If step size is 1/2, that turns a 200 step
+  //motor into a 400 step motor. If a speed of 300 was good at full step mode, you'll
+  //need to increase your speed accordingly.
+  //motor.setSpeed(1 * 300); //Turn at a rate of 300 steps per second
+  //motor.setSpeed(2 * 300); //Turn at a rate of 600 steps per second
+  motor.setSpeed(4 * 300); //Turn at a rate of 1200 steps per second
+
+  //Your speed can get very large. You may need to increase your max speed.
+  //motor.setMaxSpeed(1 * 600);
+  //motor.setMaxSpeed(2 * 600);
+  motor.setMaxSpeed(4 * 600);
+
+  while (motor.isRunning() == true)
   {
     printStatus();
-    delay(10);
+    delay(50);
   }
-  Serial.println("Motor arrived to position. Now run motor in opposite direction.");
-
-  motor.move(-200); //Turn in opposite direction
+  Serial.println("Motor got to position.");
 }
 
 void loop()

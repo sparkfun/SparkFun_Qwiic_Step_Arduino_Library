@@ -24,31 +24,28 @@ public:
     uint16_t getFirmwareVersion();                                           //Returns the firmware version of the attched device as a 16-bit integer. The leftmost (high) byte is the major revision number and the rightmost (low) byte is the minor revision number.
     bool setI2Caddress(uint8_t address);                                     //Configures the attach to the I2C bus using the specified address
     uint8_t getI2Caddress();                                                 //Returns the I2C address of the device
+    byte getStatus();
 
     //Motor control
     bool stop();
     bool hardStop();
     bool setMaxSpeed(float speed);
-    bool setSpeed(float speed);
-    bool setAcceleration(float acceleration);
-    bool moveTo(long absolute);
-    bool move(long relative);
-    bool setStepMode(uint8_t mode);
-
-    byte getStatus();
     float getMaxSpeed();
+    bool setSpeed(float speed);
     float getSpeed();
+    bool setAcceleration(float acceleration);
     float getAcceleration();
-    long getMove();
+    bool setPosition(int32_t newPosition);
+    int32_t getPosition();
+    bool moveTo(long absolute);
     long getMoveTo();
-    uint8_t getStepMode();
+    bool move(long relative);
+    long getMove();
+    bool enable();  //Energize the coils
+    bool disable(); //Turn off coils
 
-    //Microstepping
-    bool fullStepMode();
-    bool halfStepMode();
-    bool quarterStepMode();
-    bool eighthStepMode();
-    bool sixteenthStepMode();
+    bool setStepSize(sfe_qs_step_size stepSize);
+    uint8_t getStepSize();
 
     //Interrupt Handling
     bool clearInterrupts();
@@ -56,10 +53,12 @@ public:
     bool enableIsLimitedInterrupt();
     bool disableIsLimitedInterrupt();
     bool clearIsLimited();
-    bool enableStopWhenLimSwitchPressed();
-    bool disableStopWhenLimSwitchPressed();
+    bool enableStopWhenLimitSwitchPressed();
+    bool disableStopWhenLimitSwitchPressed();
     bool enableDisableMotorWhenPosReached();
     bool disableDisableMotorWhenPosReached();
+    bool enableDisableMotorOnEStop();
+    bool disableDisableMotorOnEStop();
     bool clearEStop();
 
     bool isReached(); //Returns true if isReached bit is set
@@ -73,16 +72,19 @@ public:
     bool isEStopped();
 
     //Device control
-    bool modeRunWithAcceleration();
-    bool modeRunContinuous();
-    bool modeRunToPosition();
-    bool disableOutputs();
-    bool enableOutputs();
+    bool setMode(sfe_qs_mode modeType);
+    bool setModeRunWithAcceleration();
+    bool setModeRunContinuous();
+    bool setModeRunToPosition();
+
+    //Special record to NVM functions
+    bool recordMoveToNVM();
+    bool recordSpeedToNVM();
 
     //Internal I2C Abstraction
-    bool read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize);
-    bool read(Qwiic_Step_Register reg, uint8_t data);
-    bool write(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize);
-    bool write(Qwiic_Step_Register reg, uint8_t data);
+    bool read(sfe_qs_register reg, uint8_t *buff, uint8_t buffSize);
+    bool read(sfe_qs_register reg, uint8_t data);
+    bool write(sfe_qs_register reg, uint8_t *buff, uint8_t buffSize);
+    bool write(sfe_qs_register reg, uint8_t data);
 };
 #endif

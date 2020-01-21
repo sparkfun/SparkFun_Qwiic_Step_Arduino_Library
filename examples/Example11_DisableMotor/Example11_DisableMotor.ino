@@ -1,6 +1,11 @@
 /******************************************************************************
-  Move to a location, then once the position is reached, turn the opposite direction.
-  We use the isReached() status bit to see if the motor has reached our intended destination.
+  You can tell Qwiic Step to disable the motor. This will power down the coils
+  saving power and allowing the stepper motor to cool but it will allow the head
+  of the stepper motor to run free.
+
+  The .disable() command is immediate and can be used to stop a move but if
+  the motor has intertia the disable() command does not guarantee the head will
+  stop moving. See the Stop example for that method.
 
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
@@ -12,10 +17,10 @@
   local, and you've found our code helpful, please buy us a round!
 
   Hardware Connections:
-  Attach RedBoard to computer using a USB cable.
-  Connect Qwiic Step to Red Board using Qwiic cable.
-  Connect stepper motor to Qwiic Step using latching terminals.
-  Connect power supply (8-35V) to barrel jack or using latching terminals.
+  Attach Red Board to computer using a USB cable.
+  Connect Qwiic Step to Red Board using Qwiic connector cable.
+  Connect stepper motor to Qwiic Step using latch terminals.
+  Connect power supply (8-35V) to barrel jack or latch terminals.
   Open Serial Monitor at 115200 baud.
 
   Distributed as-is; no warranty is given.
@@ -40,16 +45,19 @@ void setup()
   Serial.println("Motor acknowledged.");
 
   motor.move(200); //Turn one exact rotation of a 200 step stepper motor
-  //motor.move(16 * 200); //Turn one exact rotation of a 200 step stepper motor with 1/16th step mode
 
   while (motor.isReached() == false)
   {
     printStatus();
     delay(10);
   }
-  Serial.println("Motor arrived to position. Now run motor in opposite direction.");
+  Serial.println("Motor arrived to position. Disabling the motor.");
 
-  motor.move(-200); //Turn in opposite direction
+  motor.disable();
+
+  Serial.println("Motor head should now turn freely.");
+
+  //motor.enable(); //Will re-energize the coils
 }
 
 void loop()

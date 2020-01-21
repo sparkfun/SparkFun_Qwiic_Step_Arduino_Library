@@ -1,5 +1,6 @@
 /******************************************************************************
-  Tests the begin function and prints current firmware version on Qwiic Step
+  The Qwiic Step library has a simple begin function that verifies the connection
+  to the Qwiic Step board.
 
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
@@ -11,8 +12,8 @@
   local, and you've found our code helpful, please buy us a round!
 
   Hardware Connections:
-  Attach Red Board to computer using micro-B USB cable.
-  Connect Qwiic Step to Red Board using Qwiic connector cable.
+  Attach Red Board to computer using a USB cable.
+  Connect Qwiic Step to Red Board using Qwiic cable.
   Open Serial Monitor at 115200 baud.
 
   Distributed as-is; no warranty is given.
@@ -25,16 +26,16 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println("Qwiic step examples");
-  Wire.begin(); //Join I2C bus
+  Wire.begin();
 
-  //check if motor will acknowledge over I2C
+  //Check if Qwiic Step is correctly connected to I2C
   if (motor.begin() == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
     while (1)
       ;
   }
-  Serial.println("Motor acknowledged.");
+  Serial.println("Motor acknowledged and is connected correctly!");
 
   //Get firmware version
   Serial.print("The firmware version is: 0x");

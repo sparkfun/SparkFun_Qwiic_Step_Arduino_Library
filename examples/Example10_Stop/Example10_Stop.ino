@@ -1,19 +1,19 @@
 /******************************************************************************
-  Tests single bit writes to Qwiic Step. You can check that this works if you 
-  printState() in the Qwiic Step firmware. 
+  Demonstrates stopping the motor instantaneously, no deceleration.
 
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
-  
+
   SparkFun labored with love to create this code. Feel like supporting open source hardware?
   Buy a board from SparkFun! https://www.sparkfun.com/products/15951
-
   This code is Lemonadeware; if you see me (or any other SparkFun employee) at the
   local, and you've found our code helpful, please buy us a round!
 
   Hardware Connections:
-  Attach Red Board to computer using micro-B USB cable.
+  Attach RedBoard to computer using USB cable.
   Connect Qwiic Step to Red Board using Qwiic connector cable.
+  Connect stepper motor to Qwiic Step using latch terminals.
+  Connect power supply (8-35V) to barrel jack or latch terminals.
   Open Serial Monitor at 115200 baud.
 
   Distributed as-is; no warranty is given.
@@ -26,9 +26,9 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println("Qwiic step examples");
-  Wire.begin(); //Join I2C bus
+  Wire.begin();
 
-  //check if the motor will acknowledge over I2C
+  //Check if Qwiic Step is correctly connected to I2C
   if (motor.begin() == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
@@ -37,17 +37,19 @@ void setup()
   }
   Serial.println("Motor acknowledged.");
 
-  motor.enableIsReachedInterrupt();
-  //  motor.disableIsReachedInterrupt();
+  motor.setModeRunContinuous();
 
-  motor.disableIsLimitedInterrupt();
-  //  motor.disableIsLimitedInterrupt();
+  delay(1000);
 
-  motor.enableStopWhenLimSwitchPressed();
-  //  motor.disableStopWhenLimSwitchPressed();
+  motor.stop(); //Causes accelStepper library to stop stepping the motor.
 
-  motor.enableDisableMotorWhenPosReached();
-  //  motor.disableDisableMotorWhenPosReached();
+  delay(1000);
+
+  motor.setModeRunContinuous(); //Will cause the motor to begin where it left off
+
+  delay(1000);
+
+  motor.stop(); //Shhhhh
 }
 
 void loop()

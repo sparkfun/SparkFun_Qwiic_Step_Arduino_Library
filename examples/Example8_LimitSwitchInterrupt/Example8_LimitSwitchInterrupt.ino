@@ -12,11 +12,12 @@
   local, and you've found our code helpful, please buy us a round!
 
   Hardware Connections:
-  Attach Red Board to computer using micro-B USB cable.
-  Connect Qwiic Step to Red Board using Qwiic connector cable.
-  Connect stepper motor to Qwiic Step easy to use using latch terminals.
-  Connect power supply (8-35V) to barrel jack or latch terminals.
-  Connect a button to Qwiic Step limit switch JST connector.
+  Attach RedBoard to computer using a USB cable.
+  Connect Qwiic Step to Red Board using Qwiic cable.
+  Connect stepper motor to Qwiic Step using latching terminals.
+  Connect power supply (8-35V) to barrel jack or latching terminals.
+  Connect INT pin on Qwiic Step to pin 2 on RedBoard.
+  Connect a button to Qwiic Step limit switch JST connector: https://www.sparkfun.com/products/8671
   Open Serial Monitor at 115200 baud.
 
   Distributed as-is; no warranty is given.
@@ -35,7 +36,7 @@ void setup()
 
   pinMode(QS_INT, INPUT_PULLUP);
 
-  //check if the motor will acknowledge I2C
+  //Check if Qwiic Step is correctly connected to I2C
   if (motor.begin() == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
@@ -46,17 +47,16 @@ void setup()
 
   printStatus();
 
-  //enable interrupt trigger when limit switch is pressed
-  motor.disableInterrupts();
-  motor.clearInterrupts();
-  //motor.clearIsLimited(); //Clear isLimited bit. This will clear associated int.
-  motor.enableIsLimitedInterrupt();
+  motor.setStepSize(STEPSIZE_QUARTER); //Turns a 200 step motor into 800 steps.
+
+  motor.enableIsLimitedInterrupt();         //INT pin will go low if limit switch is closed
+  motor.enableStopWhenLimitSwitchPressed(); //Stop motor when limit switch is close
+  motor.clearInterrupts();                  //Clears both isLimited and isReached bits. This clears associated ints.
 
   printStatus();
 
   Serial.println("Running motor until limit switch is pressed or 8 seconds goes by");
 
-  motor.setAcceleration(250);
   motor.move(6000); //Will run with default maxSpeed/accel values.
 
   long startTime = millis();
@@ -98,7 +98,7 @@ void setup()
   }
 
   motor.clearInterrupts(); //Clears both isReached and isLimited bits
-  delay(50);               //Qwiic Step firmware can take a few ms to get to releasing the INT pin
+  delay(10);               //Qwiic Step firmware can take a few ms to get to releasing the INT pin
 
   if (digitalRead(QS_INT) == HIGH)
     Serial.println("INT pin is high. No interrupts.");

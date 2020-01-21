@@ -6,16 +6,23 @@ bool QwiicStep::begin(uint8_t address, TwoWire &wirePort)
     _deviceAddress = address; //grab the address that the motor is on
     _i2cPort = &wirePort;     //grab the port that the user wants to use
 
-    //Setup motor with default step size, maxSpeed and acceleration
-    //So that user can simply .move() from their sketch
-    modeRunToPosition();
+    if (isConnected() == false)
+        return (false);
 
-    fullStepMode();
+    //Setup motor with default mode, step size, maxSpeed and acceleration
+    //So that user can simply .move() from their sketch (no additional config needed)
+    setMode(QS_MODE_RUN_TO_POSITION);
+
+    setStepSize(STEPSIZE_FULL);
 
     setMaxSpeed(800); //4 full rotations per second on a 200 step motor
     setSpeed(200);
 
-    return (isConnected()); //return true if the device is connected and the device ID is what we expect
+    setPosition(0); //Mark our current position as zero point
+
+    enable(); //Make sure outputs are enabled by default
+
+    return (true); //return true if the device is connected and the device ID is what we expect
 }
 
 //Returns true if device answers with expected WHOAMI ID
@@ -78,17 +85,6 @@ uint8_t QwiicStep::getI2Caddress()
 
 /*-------------------------- Motor Control ------------------------------*/
 
-//Writes the move and moveTo registers to 0
-//This causes the motor to spin down using the accel and maxSpeed parameters
-bool QwiicStep::stop()
-{
-    bool status = true;
-    long stopValue = 0; //Force a four byte write to register
-    status &= write(QS_MOVE, (uint8_t *)&stopValue, (uint8_t)sizeof(stopValue));
-    status &= write(QS_MOVE_TO, (uint8_t *)&stopValue, (uint8_t)sizeof(stopValue));
-    return (status);
-}
-
 bool QwiicStep::setMaxSpeed(float speed)
 {
     return (write(QS_MAX_SPEED, (uint8_t *)&speed, (uint8_t)sizeof(speed)));
@@ -102,6 +98,11 @@ bool QwiicStep::setSpeed(float speed)
 bool QwiicStep::setAcceleration(float acceleration)
 {
     return (write(QS_ACCELERATION, (uint8_t *)&acceleration, (uint8_t)sizeof(acceleration)));
+}
+
+bool QwiicStep::setPosition(int32_t newPosition)
+{
+    return (write(QS_CURRENT_POSITION, (uint8_t *)&newPosition, (uint8_t)sizeof(newPosition)));
 }
 
 bool QwiicStep::move(long relative)
@@ -120,11 +121,6 @@ long QwiicStep::getMove()
 bool QwiicStep::moveTo(long absolute)
 {
     return (write(QS_MOVE_TO, (uint8_t *)&absolute, (uint8_t)sizeof(absolute)));
-}
-
-bool QwiicStep::setStepMode(uint8_t mode)
-{
-    return (write(QS_DEVICE_CONFIG, mode));
 }
 
 float QwiicStep::getMaxSpeed()
@@ -156,59 +152,23 @@ uint8_t QwiicStep::getStatus()
     return stat;
 }
 
-//Returns the bits set that control the micro step amount
-uint8_t QwiicStep::getStepMode()
+/*------------------------- Motor Stepping ------------------------------*/
+
+bool QwiicStep::setStepSize(sfe_qs_step_size stepSize)
+{
+    configBitField deviceConfigure;
+    read(QS_DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
+    deviceConfigure.MS1 = stepSize & 0b001;
+    deviceConfigure.MS2 = stepSize & 0b010;
+    deviceConfigure.MS3 = stepSize & 0b100;
+    return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
+
+uint8_t QwiicStep::getStepSize()
 {
     uint8_t mode;
     read(QS_DEVICE_CONFIG, (uint8_t *)&mode, (uint8_t)sizeof(mode));
     return mode;
-}
-
-/*------------------------- Motor Stepping ------------------------------*/
-
-bool QwiicStep::fullStepMode()
-{
-    deviceConfigBitField deviceConfigure;
-    deviceConfigure.MS1 = 0;
-    deviceConfigure.MS2 = 0;
-    deviceConfigure.MS3 = 0;
-    return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
-}
-
-bool QwiicStep::halfStepMode()
-{
-    deviceConfigBitField deviceConfigure;
-    deviceConfigure.MS1 = 1;
-    deviceConfigure.MS2 = 0;
-    deviceConfigure.MS3 = 0;
-    return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
-}
-
-bool QwiicStep::quarterStepMode()
-{
-    deviceConfigBitField deviceConfigure;
-    deviceConfigure.MS1 = 0;
-    deviceConfigure.MS2 = 1;
-    deviceConfigure.MS3 = 0;
-    return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
-}
-
-bool QwiicStep::eighthStepMode()
-{
-    deviceConfigBitField deviceConfigure;
-    deviceConfigure.MS1 = 1;
-    deviceConfigure.MS2 = 1;
-    deviceConfigure.MS3 = 0;
-    return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
-}
-
-bool QwiicStep::sixteenthStepMode()
-{
-    deviceConfigBitField deviceConfigure;
-    deviceConfigure.MS1 = 1;
-    deviceConfigure.MS2 = 1;
-    deviceConfigure.MS3 = 1;
-    return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
 /*---------------------- Interrupt Configuration ------------------------*/
@@ -217,7 +177,7 @@ bool QwiicStep::sixteenthStepMode()
 //See interruptConfigBitField for possible related bits
 bool QwiicStep::clearInterrupts()
 {
-    statusRegisterBitField status;
+    statusBitField status;
     read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
     status.isLimited = 0;
     status.isReached = 0;
@@ -251,7 +211,7 @@ bool QwiicStep::disableIsReachedInterrupt()
 
 bool QwiicStep::clearIsReached()
 {
-    statusRegisterBitField status;
+    statusBitField status;
     read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
     status.isReached = 0;
     return (write(QS_STATUS, status.byteWrapped));
@@ -259,7 +219,7 @@ bool QwiicStep::clearIsReached()
 
 bool QwiicStep::isReached()
 {
-    statusRegisterBitField status;
+    statusBitField status;
     read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
     if (status.isReached == true)
         return (true);
@@ -268,7 +228,7 @@ bool QwiicStep::isReached()
 
 bool QwiicStep::isRunning()
 {
-    statusRegisterBitField status;
+    statusBitField status;
     read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
     if (status.isRunning == true)
         return (true);
@@ -277,7 +237,7 @@ bool QwiicStep::isRunning()
 
 bool QwiicStep::isAccelerating()
 {
-    statusRegisterBitField status;
+    statusBitField status;
     read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
     if (status.isAccelerating == true)
         return (true);
@@ -286,7 +246,7 @@ bool QwiicStep::isAccelerating()
 
 bool QwiicStep::isDecelerating()
 {
-    statusRegisterBitField status;
+    statusBitField status;
     read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
     if (status.isDecelerating == true)
         return (true);
@@ -295,7 +255,7 @@ bool QwiicStep::isDecelerating()
 
 bool QwiicStep::isLimited()
 {
-    statusRegisterBitField status;
+    statusBitField status;
     read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
     if (status.isLimited == true)
         return (true);
@@ -304,7 +264,7 @@ bool QwiicStep::isLimited()
 
 bool QwiicStep::isEStopped()
 {
-    statusRegisterBitField status;
+    statusBitField status;
     read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
     if (status.isEStopped == true)
         return (true);
@@ -329,23 +289,23 @@ bool QwiicStep::disableIsLimitedInterrupt()
 
 bool QwiicStep::clearIsLimited()
 {
-    statusRegisterBitField status;
+    statusBitField status;
     read(QS_STATUS, (uint8_t *)&status.byteWrapped, sizeof(status.byteWrapped));
     status.isLimited = 0;
     return (write(QS_STATUS, status.byteWrapped));
 }
 
-bool QwiicStep::enableStopWhenLimSwitchPressed()
+bool QwiicStep::enableStopWhenLimitSwitchPressed()
 {
-    deviceConfigBitField deviceConfigure;
+    configBitField deviceConfigure;
     read(QS_DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
     deviceConfigure.stopOnLimitSwitchPress = 1;
     return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
-bool QwiicStep::disableStopWhenLimSwitchPressed()
+bool QwiicStep::disableStopWhenLimitSwitchPressed()
 {
-    deviceConfigBitField deviceConfigure;
+    configBitField deviceConfigure;
     read(QS_DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
     deviceConfigure.stopOnLimitSwitchPress = 0;
     return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
@@ -353,7 +313,7 @@ bool QwiicStep::disableStopWhenLimSwitchPressed()
 
 bool QwiicStep::enableDisableMotorWhenPosReached()
 {
-    deviceConfigBitField deviceConfigure;
+    configBitField deviceConfigure;
     read(QS_DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
     deviceConfigure.disableMotorOnPositionReached = 1;
     return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
@@ -361,87 +321,96 @@ bool QwiicStep::enableDisableMotorWhenPosReached()
 
 bool QwiicStep::disableDisableMotorWhenPosReached()
 {
-    deviceConfigBitField deviceConfigure;
+    configBitField deviceConfigure;
     read(QS_DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
     deviceConfigure.disableMotorOnPositionReached = 0;
     return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
 }
 
+bool QwiicStep::enableDisableMotorOnEStop()
+{
+    configBitField deviceConfigure;
+    read(QS_DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
+    deviceConfigure.disableMotorOnEStop = 1;
+    return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
+
+bool QwiicStep::disableDisableMotorOnEStop()
+{
+    configBitField deviceConfigure;
+    read(QS_DEVICE_CONFIG, (uint8_t *)&deviceConfigure.byteWrapped, sizeof(deviceConfigure.byteWrapped));
+    deviceConfigure.disableMotorOnEStop = 0;
+    return (write(QS_DEVICE_CONFIG, deviceConfigure.byteWrapped));
+}
+
 //User needs to manually clear eStop bit when an emergency stop has occurred
-//DEBUG: still need to test this
 bool QwiicStep::clearEStop()
 {
-    statusRegisterBitField status;
+    statusBitField status;
     status.isEStopped = 0;
     return (write(QS_STATUS, status.byteWrapped));
 }
 
-//DEBUG: still need to test all of these
 /*---------------------------- Run options ------------------------------*/
 
-bool QwiicStep::modeRunWithAcceleration()
+bool QwiicStep::setMode(sfe_qs_mode modeType)
 {
-    motorControlBitField motorControl;
+    controlBitField motorControl;
     read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
-    motorControl.runToPosition = 0;
-    motorControl.runToPositionWithAccel = 1;
-    motorControl.runContinous = 0;
-    motorControl.hardStop = 0;
+    motorControl.byteWrapped &= 0b11110000;
+    motorControl.byteWrapped |= modeType;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
-bool QwiicStep::modeRunContinuous()
+bool QwiicStep::setModeRunToPosition()
 {
-    motorControlBitField motorControl;
-    read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
-    motorControl.runToPosition = 0;
-    motorControl.runToPositionWithAccel = 0;
-    motorControl.runContinous = 1;
-    motorControl.hardStop = 0;
-    return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
+    return (setMode(QS_MODE_RUN_TO_POSITION));
 }
 
-bool QwiicStep::modeRunToPosition()
+bool QwiicStep::setModeRunWithAcceleration()
 {
-    motorControlBitField motorControl;
-    read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
-    motorControl.runToPosition = 1;
-    motorControl.runToPositionWithAccel = 0;
-    motorControl.runContinous = 0;
-    motorControl.hardStop = 0;
-    return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
+    return (setMode(QS_MODE_RUN_TO_POSITION_WITH_ACCELERATION));
 }
 
-bool QwiicStep::hardStop()
+bool QwiicStep::setModeRunContinuous()
 {
-    motorControlBitField motorControl;
-    read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
-    motorControl.runToPosition = 0;
-    motorControl.runToPositionWithAccel = 0;
-    motorControl.runContinous = 0;
-    motorControl.hardStop = 1;
-    return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
+    return (setMode(QS_MODE_RUN_CONTINUOUS));
 }
 
-bool QwiicStep::disableOutputs()
+bool QwiicStep::stop()
 {
-    motorControlBitField motorControl;
+    return (setMode(QS_MODE_HARD_STOP));
+}
+
+bool QwiicStep::disable()
+{
+    controlBitField motorControl;
     read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
     motorControl.disableMotor = 1;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
-bool QwiicStep::enableOutputs()
+bool QwiicStep::enable()
 {
-    motorControlBitField motorControl;
+    controlBitField motorControl;
     read(QS_MOTOR_CONTROL, (uint8_t *)&motorControl.byteWrapped, sizeof(motorControl.byteWrapped));
     motorControl.disableMotor = 0;
     return (write(QS_MOTOR_CONTROL, motorControl.byteWrapped));
 }
 
+bool QwiicStep::recordMoveToNVM()
+{
+    return (write(QS_UNLOCK_MOVE_NVM, 0x59));
+}
+
+bool QwiicStep::recordSpeedToNVM()
+{
+    return (write(QS_UNLOCK_SPEED_NVM, 0xC4));
+}
+
 /*---------------------- Internal I2C Abstraction -----------------------*/
 
-bool QwiicStep::read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)
+bool QwiicStep::read(sfe_qs_register reg, uint8_t *buff, uint8_t buffSize)
 {
     _i2cPort->beginTransmission(_deviceAddress);
     _i2cPort->write(reg);
@@ -461,12 +430,12 @@ bool QwiicStep::read(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)
 
 //Overloaded function declaration
 //Use when reading just one byte of data
-bool QwiicStep::read(Qwiic_Step_Register reg, uint8_t data)
+bool QwiicStep::read(sfe_qs_register reg, uint8_t data)
 {
     return (read(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
 }
 
-bool QwiicStep::write(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)
+bool QwiicStep::write(sfe_qs_register reg, uint8_t *buff, uint8_t buffSize)
 {
     _i2cPort->beginTransmission(_deviceAddress);
     _i2cPort->write(reg);
@@ -481,7 +450,7 @@ bool QwiicStep::write(Qwiic_Step_Register reg, uint8_t *buff, uint8_t buffSize)
 
 //Overloaded function declaration
 //Use when writing just one byte of data
-bool QwiicStep::write(Qwiic_Step_Register reg, uint8_t data)
+bool QwiicStep::write(sfe_qs_register reg, uint8_t data)
 {
     return (write(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
 }
