@@ -19,6 +19,7 @@
   Connect Qwiic Step to Red Board using Qwiic connector cable.
   Connect stepper motor to Qwiic Step using latch terminals.
   Connect power supply (8-35V) to barrel jack or latch terminals.
+  Attach a second Qwiic Step board and motor using Qwiic connector cable to Qwic Step 1.
   Open Serial Monitor at 115200 baud.
 
   Distributed as-is; no warranty is given.
