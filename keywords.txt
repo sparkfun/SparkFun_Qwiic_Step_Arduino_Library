@@ -1,23 +1,78 @@
-#######################################
-# Syntax Coloring Map
-#######################################
-
-#######################################
-# Datatypes (KEYWORD1)
-#######################################
-
+==================================
+CLASS
+==================================
 QwiicStep	KEYWORD1
 
-#######################################
-# Methods and Functions (KEYWORD2)
-#######################################
-
+==================================
+FUNCTIONS
+==================================
 begin	KEYWORD2
+isConnected	KEYWORD2
+deviceID	KEYWORD2
+checkDeviceID	KEYWORD2
+getFirmwareVersion	KEYWORD2
+setI2Caddress	KEYWORD2
+getI2Caddress	KEYWORD2
+getStatus	KEYWORD2
+stop	KEYWORD2
+hardStop	KEYWORD2
+setMaxSpeed	KEYWORD2
+getMaxSpeed	KEYWORD2
+setSpeed	KEYWORD2
+getSpeed	KEYWORD2
+setAcceleration	KEYWORD2
+getAcceleration	KEYWORD2
+setPosition	KEYWORD2
+getPosition	KEYWORD2
+moveTo	KEYWORD2
+getMoveTo	KEYWORD2
 move	KEYWORD2
+getMove	KEYWORD2
+toGo	KEYWORD2
+enable	KEYWORD2
+disable	KEYWORD2
+setStepSize	KEYWORD2
+getStepSize	KEYWORD2
+clearInterrupts	KEYWORD2
+disableInterrupts	KEYWORD2
+enableIsLimitedInterrupt	KEYWORD2
+disableIsLimitedInterrupt	KEYWORD2
+clearIsLimited	KEYWORD2
+enableStopWhenLimitSwitchPressed	KEYWORD2
+disableStopWhenLimitSwitchPressed	KEYWORD2
+enableDisableMotorWhenPosReached	KEYWORD2
+disableDisableMotorWhenPosReached	KEYWORD2
+enableDisableMotorOnEStop	KEYWORD2
+disableDisableMotorOnEStop	KEYWORD2
+clearEStop	KEYWORD2
+isReached	KEYWORD2
+clearIsReached	KEYWORD2
+enableIsReachedInterrupt	KEYWORD2
+disableIsReachedInterrupt	KEYWORD2
+isRunning	KEYWORD2
+isAccelerating	KEYWORD2
+isDecelerating	KEYWORD2
+isLimited	KEYWORD2
+isEStopped	KEYWORD2
+setMode	KEYWORD2
+setModeRunWithAcceleration	KEYWORD2
+setModeRunContinuous	KEYWORD2
+setModeRunToPosition	KEYWORD2
+recordMoveToNVM	KEYWORD2
+recordSpeedToNVM	KEYWORD2
+setHoldCurrent	KEYWORD2
+getHoldCurrent	KEYWORD2
+setRunCurrent	KEYWORD2
+getRunCurrent	KEYWORD2
+read	KEYWORD2
+write	KEYWORD2
 
+==================================
+CONSTANTS
+==================================
+DEFAULT_ADDRESS	LITERAL1
+DEV_ID	LITERAL1
 
-#######################################
-# Constants (LITERAL1)
-#######################################
-
-
+==================================
+DATA TYPES
+==================================
