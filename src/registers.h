@@ -16,9 +16,9 @@ typedef enum
     QS_ACCELERATION = 0x1C,
     QS_SPEED = 0x20,
     QS_UNLOCK_SPEED_NVM = 0x24,
-    QS_HOLD_CURRENT = 0x25,
-    QS_RUN_CURRENT = 0x27,
-    QS_I2C_ADDRESS = 0x29,
+    QS_HOLD_VOLTAGE = 0x25,
+    QS_RUN_VOLTAGE = 0x29,
+    QS_I2C_ADDRESS = 0x2D,
 } sfe_qs_register;
 
 typedef enum

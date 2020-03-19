@@ -80,10 +80,10 @@ public:
     bool recordMoveToNVM();
     bool recordSpeedToNVM();
 
-    bool setHoldCurrent(uint16_t maxCurrent);
-    uint16_t getHoldCurrent();
-    bool setRunCurrent(uint16_t maxCurrent);
-    uint16_t getRunCurrent();
+    bool setHoldVoltage(float maxVoltage);
+    float getHoldVoltage();
+    bool setRunVoltage(float maxVoltage);
+    float getRunVoltage();
 
     //Internal I2C Abstraction
     bool read(sfe_qs_register reg, uint8_t *buff, uint8_t buffSize);

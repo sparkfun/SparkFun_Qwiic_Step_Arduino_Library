@@ -158,28 +158,28 @@ uint8_t QwiicStep::getStatus()
     return stat;
 }
 
-bool QwiicStep::setHoldCurrent(uint16_t newCurrent)
+bool QwiicStep::setHoldVoltage(float newVoltage)
 {
-    return (write(QS_HOLD_CURRENT, (uint8_t *)&newCurrent, (uint8_t)sizeof(newCurrent)));
+    return (write(QS_HOLD_VOLTAGE, (uint8_t *)&newVoltage, (uint8_t)sizeof(newVoltage)));
 }
 
-uint16_t QwiicStep::getHoldCurrent()
+float QwiicStep::getHoldVoltage()
 {
-    uint16_t holdCurrent;
-    read(QS_HOLD_CURRENT, (uint8_t *)&holdCurrent, (uint8_t)sizeof(holdCurrent));
-    return (holdCurrent);
+    uint16_t holdVoltage;
+    read(QS_HOLD_VOLTAGE, (uint8_t *)&holdVoltage, (uint8_t)sizeof(holdVoltage));
+    return (holdVoltage);
 }
 
-bool QwiicStep::setRunCurrent(uint16_t newCurrent)
+bool QwiicStep::setRunVoltage(float newVoltage)
 {
-    return (write(QS_RUN_CURRENT, (uint8_t *)&newCurrent, (uint8_t)sizeof(newCurrent)));
+    return (write(QS_RUN_VOLTAGE, (uint8_t *)&newVoltage, (uint8_t)sizeof(newVoltage)));
 }
 
-uint16_t QwiicStep::getRunCurrent()
+float QwiicStep::getRunVoltage()
 {
-    uint16_t runCurrent;
-    read(QS_RUN_CURRENT, (uint8_t *)&runCurrent, (uint8_t)sizeof(runCurrent));
-    return (runCurrent);
+    uint16_t runVoltage;
+    read(QS_RUN_VOLTAGE, (uint8_t *)&runVoltage, (uint8_t)sizeof(runVoltage));
+    return (runVoltage);
 }
 
 /*------------------------- Motor Stepping ------------------------------*/

@@ -1,16 +1,17 @@
 /******************************************************************************
-  Qwiic Step defaults to a hold and run current of 1A total (500mA per phase).
+  Qwiic Step defaults to a hold and run voltage of 1.2V. This is about 1A per
+  phase but varies on the motor and step configuration you have.
   The A4988 IC is capable of 2A total (1A per phase) but requires heat sinking
   and a larger power supply.
 
   In addition, Qwiic Step can be configured to have seperate hold and run current
-  maximums. For example, while holding the max current can be set to 100mA where
-  as the run current can be set to 800mA.
+  maximums. For example, while holding the max voltage can be set to 0.1V where
+  as the run voltage can be set to 2V.
 
   This is achieved on Qwiic Step by changing the voltage going into the
   CURRENT_REFERENCE pin on the A4988.
 
-  This example shows how to modify the run and hold max current values.
+  This example shows how to modify the run and hold voltages.
 
   Priyanka Makin @ SparkFun Electronics
   Original Creation Date: January 10, 2020
@@ -49,12 +50,13 @@ void setup()
   }
   Serial.println("Motor acknowledged.");
 
-  motor.setHoldCurrent(100); //Set hold current to 100mA
-  motor.setRunCurrent(800);  //Set run current to 800mA
+  motor.setHoldVoltage(0.050); //Set hold voltage to 0.05V
+  motor.setRunVoltage(2.000);  //Set run voltage to 2V
 
   motor.move(200); //Turn one exact rotation of a 200 step stepper motor
 
   //Motor will be moving...
+  //It should be easy to turn the motor once it has finished moving.
 }
 
 void loop()

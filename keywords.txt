@@ -60,10 +60,10 @@ setModeRunContinuous	KEYWORD2
 setModeRunToPosition	KEYWORD2
 recordMoveToNVM	KEYWORD2
 recordSpeedToNVM	KEYWORD2
-setHoldCurrent	KEYWORD2
-getHoldCurrent	KEYWORD2
-setRunCurrent	KEYWORD2
-getRunCurrent	KEYWORD2
+setHoldVoltage	KEYWORD2
+getHoldVoltage	KEYWORD2
+setRunVoltage	KEYWORD2
+getRunVoltage	KEYWORD2
 read	KEYWORD2
 write	KEYWORD2
 
