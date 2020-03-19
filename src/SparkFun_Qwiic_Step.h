@@ -1,7 +1,6 @@
 #ifndef __SparkFun_Qwiic_Step_H__
 #define __SparkFun_Qwiic_Step_H__
 
-#include <AccelStepper.h> //DEBUG: maybe.. idk yet
 #include <Wire.h>
 #include <Arduino.h>
 #include "registers.h"
@@ -19,8 +18,7 @@ public:
     //Device status
     bool begin(uint8_t address = DEFAULT_ADDRESS, TwoWire &wirePort = Wire); //Sets device I2C address to a user-specified address, over whatever port the user defines.
     bool isConnected();                                                      //Returns true if the button/switch will acknowledge over I2C and false otherwise.
-    uint8_t deviceID();                                                      //Returns the 8-bit device ID of the attached device.
-    bool checkDeviceID();                                                    //Returns true if the deviceID matches that of the default for the motor.
+    uint8_t getDeviceID();                                                   //Returns the 8-bit device ID of the attached device.
     uint16_t getFirmwareVersion();                                           //Returns the firmware version of the attched device as a 16-bit integer. The leftmost (high) byte is the major revision number and the rightmost (low) byte is the minor revision number.
     bool setI2Caddress(uint8_t address);                                     //Configures the attach to the I2C bus using the specified address
     uint8_t getI2Caddress();                                                 //Returns the I2C address of the device

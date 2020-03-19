@@ -31,22 +31,17 @@ bool QwiicStep::isConnected()
     _i2cPort->beginTransmission(_deviceAddress);
     if (_i2cPort->endTransmission() == 0)
     {
-        if (checkDeviceID() == true)
+        if (getDeviceID() == DEV_ID) //Return true if the device ID matches
             return true;
     }
     return false;
 }
 
-uint8_t QwiicStep::deviceID()
+uint8_t QwiicStep::getDeviceID()
 {
     uint8_t id;
-    read(QS_ID, (uint8_t *)&id, (uint8_t)sizeof(id)); //read and return the value in the ID register
+    read(QS_ID, (uint8_t *)&id, (uint8_t)sizeof(id));
     return id;
-}
-
-bool QwiicStep::checkDeviceID()
-{
-    return (deviceID() == DEV_ID); //Return true if the device ID matches
 }
 
 uint16_t QwiicStep::getFirmwareVersion()
@@ -56,7 +51,6 @@ uint16_t QwiicStep::getFirmwareVersion()
     return version;
 }
 
-//DEBUG: have to test this in the future (once EEPROM is set up)
 bool QwiicStep::setI2Caddress(uint8_t address)
 {
     //check that address is valid
