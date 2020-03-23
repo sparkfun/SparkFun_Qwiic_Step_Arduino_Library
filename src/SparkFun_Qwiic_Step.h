@@ -25,70 +25,72 @@ public:
     byte getStatus();
 
     //Motor control
-    bool stop();
-    bool hardStop();
-    bool setMaxSpeed(float speed);
-    float getMaxSpeed();
-    bool setSpeed(float speed);
-    float getSpeed();
-    bool setAcceleration(float acceleration);
-    float getAcceleration();
-    bool setPosition(int32_t newPosition);
-    int32_t getPosition();
-    bool moveTo(long absolute);
-    long getMoveTo();
-    bool move(long relative);
-    long getMove();
-    long toGo();
+    bool stop();    //Brings the motor to a hard stop in the midst of movement
+    bool setMaxSpeed(float speed);  //Set the max speed of the motor when it's moving with acceleration 
+    float getMaxSpeed();    //Returns the max speed of the motor 
+    bool setSpeed(float speed); //Set the speed of the motor without acceleration. Use this with runContinuous or runToPosition
+    float getSpeed();   //Returns the speed of the motor
+    bool setAcceleration(float acceleration);   //Set the motor acceleration
+    float getAcceleration();    //Returns the motor acceleration
+    bool setPosition(int32_t newPosition);  //Set the current position of the motor (in steps)
+    int32_t getPosition();  //Returns the current position of the motor (in steps)
+    bool moveTo(long absolute); //Set the absolute target position for the motor to move to 
+    long getMoveTo();   //Returns the absolute target position for the motor to move to
+    bool move(long relative);   //Set the relative target position for the motor to move
+    long getMove(); //Returns the relative target position for the motor to move 
+    long toGo();    //Returns the number of steps left to go
     bool enable();  //Energize the coils
     bool disable(); //Turn off coils
 
-    bool setStepSize(sfe_qs_step_size stepSize);
-    uint8_t getStepSize();
+    //Micro-stepping
+    bool setStepSize(sfe_qs_step_size stepSize);    //Set the step size of the motor. Options are full, half, quarter, eighth, and sixteenth of a step.
+    uint8_t getStepSize();  //Returns the current step size.
+
+    //Motor status
+    bool isReached(); //Returns true if isReached bit is set
+    bool isRunning();   //Returns true if isRunning bit is set
+    bool isAccelerating();  //Returns true if isAccelerating bit is set
+    bool isDecelerating();  //Returns true if isDecelerating bit is set
+    bool isLimited();   //Returns true if isLimited bit is set
+    bool isEStopped();  //Returns true if isEStopped bit is set
 
     //Interrupt Handling
-    bool clearInterrupts();
-    bool disableInterrupts();
-    bool enableIsLimitedInterrupt();
-    bool disableIsLimitedInterrupt();
-    bool clearIsLimited();
-    bool enableStopWhenLimitSwitchPressed();
-    bool disableStopWhenLimitSwitchPressed();
-    bool enableDisableMotorWhenPosReached();
-    bool disableDisableMotorWhenPosReached();
-    bool enableDisableMotorOnEStop();
-    bool disableDisableMotorOnEStop();
-    bool clearEStop();
-
-    bool isReached(); //Returns true if isReached bit is set
-    bool clearIsReached();
-    bool enableIsReachedInterrupt();
-    bool disableIsReachedInterrupt();
-    bool isRunning();
-    bool isAccelerating();
-    bool isDecelerating();
-    bool isLimited();
-    bool isEStopped();
+    bool clearInterrupts(); //User needs to clear all the interrupt bits (isLimited, isReached) once an interrupt has triggered
+    bool disableInterrupts();   //Disable ALL interrupts
+    bool enableIsReachedInterrupt();    //Enable isReached interrupt which triggers when the motor reaches its destination
+    bool disableIsReachedInterrupt();   //Disable the isReached interrupt
+    bool clearIsReached();  //Clear the isReached bit
+    bool enableIsLimitedInterrupt();    //Enable isLimited interrupt which triggers when the limit switch is pressed
+    bool disableIsLimitedInterrupt();   //Disable isLimited interrupt
+    bool clearIsLimited();  //Clear the isLimited bit
+    bool enableStopWhenLimitSwitchPressed();    //Enable the motor to stop when isLimited is triggered
+    bool disableStopWhenLimitSwitchPressed();   //Disable the motor stopping when isLimited is triggered
+    bool enableDisableMotorWhenPosReached();    //Enable the functionality to disable the motor once the motor has reached its position  
+    bool disableDisableMotorWhenPosReached();   //Disable the functionality to disable the motor once the motor has reached its position
+    bool enableDisableMotorOnEStop();   //Enable the functionality to disable the motor when EStop is pressed
+    bool disableDisableMotorOnEStop();  //Disable the functionality to disable the motor when EStop is pressed
+    bool clearEStop();  //Clear the isEStopped bit
 
     //Device control
-    bool setMode(sfe_qs_mode modeType);
-    bool setModeRunWithAcceleration();
-    bool setModeRunContinuous();
-    bool setModeRunToPosition();
+    bool setMode(sfe_qs_mode modeType); //Set the run mode of the motor. Options are run to position, run to position with acceleration, run continuous, and hard stop.
+    bool setModeRunWithAcceleration();  //This mode runs the motor to the desired position with acceleration. Need to set move or moveTo, maxSpeed, and acceleration before calling this run mode.
+    bool setModeRunContinuous();    //This mode runs the motor at a continuous speed until it is told to stop. Need to set the speed and maxSpeed before calling this run mode.
+    bool setModeRunToPosition();    //This mode runs the motor at a continuous speed to a desired position. Need to set the speed, maxSpeed, and either move or moveTo before calling this run mode.
 
     //Special record to NVM functions
-    bool recordMoveToNVM();
-    bool recordSpeedToNVM();
+    bool recordMoveToNVM(); //Records the current move value to non-volatile memory. Used for headless operation.
+    bool recordSpeedToNVM();    //Records the current speed value to non-volatile memory. Used for headless operation.
 
-    bool setHoldVoltage(float maxVoltage);
-    float getHoldVoltage();
-    bool setRunVoltage(float maxVoltage);
-    float getRunVoltage();
+    //Run/Hold voltage configuration
+    bool setHoldVoltage(float maxVoltage);  //Set the hold voltage of the motor. Voltage is a float from 0 to 3.3V.
+    float getHoldVoltage(); //Returns the hold voltage
+    bool setRunVoltage(float maxVoltage);   //Set the run voltage of the motor. Voltage is a float from 0 to 3.3V.
+    float getRunVoltage();  //Retruns the run voltage
 
     //Internal I2C Abstraction
-    bool read(sfe_qs_register reg, uint8_t *buff, uint8_t buffSize);
-    bool read(sfe_qs_register reg, uint8_t data);
-    bool write(sfe_qs_register reg, uint8_t *buff, uint8_t buffSize);
-    bool write(sfe_qs_register reg, uint8_t data);
+    bool read(sfe_qs_register reg, uint8_t *buff, uint8_t buffSize);    //I2C read function for multiple bytes
+    bool read(sfe_qs_register reg, uint8_t data);   //I2C read function for one byte
+    bool write(sfe_qs_register reg, uint8_t *buff, uint8_t buffSize);   //I2C write function for multiple bytes
+    bool write(sfe_qs_register reg, uint8_t data);  //I2C write function for one byte
 };
 #endif
