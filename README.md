@@ -1,12 +1,14 @@
 SparkFun Qwiic Step Arduino Library
 ===========================================================
 
-![SparkFun Qwiic Step](https://cdn.sparkfun.com/assets/parts/1/3/5/5/4/15164-SparkFun_Qwiic_OpenLog-01.jpg)
+[![SparkFun Qwiic Step](https://cdn.sparkfun.com/assets/parts/1/4/5/9/9/15951-Qwiic_Step-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/4/5/9/9/15951-Qwiic_Step-01.jpg)
+
+[![SparkFun Qwiic Step System](https://cdn.sparkfun.com/assets/parts/1/4/5/9/9/15951-Qwiic_Step-05.jpg)](https://cdn.sparkfun.com/assets/parts/1/4/5/9/9/15951-Qwiic_Step-05.jpg)
 
 [*SparkFun Qwiic Step (SPX-15951)*](https://www.sparkfun.com/products/15951)
 
 
-This is a library of functions for the SparkFun's Qwiic Step product
+This is a library of functions for the SparkFun's Qwiic Step product. Easily configure motor movements and set up interrupts over I2C using our library.
 
 Repository Contents
 -------------------
