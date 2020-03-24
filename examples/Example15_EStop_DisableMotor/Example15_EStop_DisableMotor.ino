@@ -25,6 +25,7 @@
   Connect stepper motor to Qwiic Step using latch terminals.
   Connect a button to Qwiic Step EStop connector: https://www.sparkfun.com/products/8671
   Connect power supply (8-35V) to barrel jack or latch terminals.
+  Attach a button with JST to E-Stop connector on Qwiic Step.
 
   Open Serial Monitor at 115200 baud.
 

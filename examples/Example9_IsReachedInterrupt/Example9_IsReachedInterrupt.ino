@@ -85,3 +85,23 @@ void setup()
 void loop()
 {
 }
+
+void printStatus()
+{
+  Serial.print("Qwiic Step Status: ");
+  if (motor.isRunning())
+    Serial.print(" (isRunning)");
+  else
+    Serial.print(" (Stopped)");
+  if (motor.isAccelerating())
+    Serial.print(" (isAccelerating)");
+  if (motor.isDecelerating())
+    Serial.print(" (isDecelerating)");
+  if (motor.isReached())
+    Serial.print(" (isReached)");
+  if (motor.isLimited())
+    Serial.print(" (isLimited)");
+  if (motor.isEStopped())
+    Serial.print(" (isEStopped)");
+  Serial.println();
+}

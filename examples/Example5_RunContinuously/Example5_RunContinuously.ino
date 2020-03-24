@@ -37,7 +37,7 @@ void setup()
   }
   Serial.println("Motor acknowledged.");
 
-  motor.modeRunContinuous(); //Tell the motor to run at the given speed... forever
+  motor.setModeRunContinuous(); //Tell the motor to run at the given speed... forever
 
   //Continual running at speed:
   //Speeds are in steps per second.

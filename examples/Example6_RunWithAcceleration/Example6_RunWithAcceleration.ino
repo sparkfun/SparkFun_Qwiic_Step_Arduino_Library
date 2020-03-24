@@ -38,7 +38,7 @@ void setup()
   }
   Serial.println("Motor acknowledged.");
 
-  motor.modeRunWithAcceleration(); //Tell the motor to run with accel/decel until we have arrived at position
+  motor.setModeRunWithAcceleration(); //Tell the motor to run with accel/decel until we have arrived at position
 
   //Run with accelerations to a position
   motor.setMaxSpeed(600); //Speeds over 600 cause stepper to lose steps
